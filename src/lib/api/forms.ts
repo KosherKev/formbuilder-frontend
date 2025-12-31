@@ -1,0 +1,177 @@
+import api from "./client";
+
+export interface Form {
+  _id: string;
+  title: string;
+  description: string;
+  userId: string;
+  slug: string;
+  status: "draft" | "published" | "archived";
+  questions: Question[];
+  settings: FormSettings;
+  theme: FormTheme;
+  analytics: FormAnalytics;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Question {
+  id: string;
+  type:
+    | "short_text"
+    | "long_text"
+    | "multiple_choice"
+    | "checkboxes"
+    | "dropdown"
+    | "email"
+    | "phone"
+    | "number"
+    | "date"
+    | "file_upload";
+  label: string;
+  description?: string;
+  required: boolean;
+  placeholder?: string;
+  options?: QuestionOption[];
+  validation?: QuestionValidation;
+  conditionalLogic?: ConditionalLogic;
+  order: number;
+}
+
+export interface QuestionOption {
+  id: string;
+  label: string;
+  value: string;
+}
+
+export interface QuestionValidation {
+  min?: number;
+  max?: number;
+  pattern?: string;
+  errorMessage?: string;
+}
+
+export interface ConditionalLogic {
+  enabled: boolean;
+  conditions: Condition[];
+  action: "show" | "hide" | "jump_to";
+  targetQuestionId?: string;
+}
+
+export interface Condition {
+  questionId: string;
+  operator:
+    | "equals"
+    | "not_equals"
+    | "contains"
+    | "not_contains"
+    | "greater_than"
+    | "less_than";
+  value: any;
+}
+
+export interface FormSettings {
+  isPublished: boolean;
+  allowMultipleSubmissions: boolean;
+  showProgressBar: boolean;
+  oneQuestionPerPage: boolean;
+  submitButtonText: string;
+  thankYouMessage: string;
+  redirectUrl?: string;
+  customDomain?: string;
+  startDate?: string;
+  endDate?: string;
+  responseLimit?: number;
+  requireEmail: boolean;
+  enableCaptcha: boolean;
+  enableNotifications: boolean;
+  notificationEmails: string[];
+  customCSS?: string;
+  webhookUrl?: string;
+  webhookEvents?: string[];
+}
+
+export interface FormTheme {
+  primaryColor: string;
+  backgroundColor: string;
+  fontFamily: string;
+}
+
+export interface FormAnalytics {
+  totalViews: number;
+  totalStarts: number;
+  totalSubmissions: number;
+  averageCompletionTime: number;
+}
+
+export interface CreateFormData {
+  title: string;
+  description?: string;
+  questions?: Question[];
+}
+
+export const formService = {
+  async createForm(data: CreateFormData): Promise<{ success: boolean; data: Form }> {
+    const response = await api.post("/forms", data);
+    return response.data;
+  },
+
+  async getForms(params?: {
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    success: boolean;
+    data: Form[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  }> {
+    const response = await api.get("/forms", { params });
+    return response.data;
+  },
+
+  async getForm(id: string): Promise<{ success: boolean; data: Form }> {
+    const response = await api.get(`/forms/${id}`);
+    return response.data;
+  },
+
+  async updateForm(id: string, data: Partial<Form>): Promise<{ success: boolean; data: Form }> {
+    const response = await api.put(`/forms/${id}`, data);
+    return response.data;
+  },
+
+  async deleteForm(id: string): Promise<{ success: boolean }> {
+    const response = await api.delete(`/forms/${id}`);
+    return response.data;
+  },
+
+  async togglePublish(id: string): Promise<{ success: boolean; data: Form }> {
+    const response = await api.patch(`/forms/${id}/publish`);
+    return response.data;
+  },
+
+  async duplicateForm(id: string): Promise<{ success: boolean; data: Form }> {
+    const response = await api.post(`/forms/${id}/duplicate`);
+    return response.data;
+  },
+
+  async getFormAnalytics(id: string): Promise<{
+    success: boolean;
+    data: {
+      totalViews: number;
+      totalStarts: number;
+      totalSubmissions: number;
+      partialSubmissions: number;
+      completionRate: string;
+      averageCompletionTime: number;
+    };
+  }> {
+    const response = await api.get(`/forms/${id}/analytics`);
+    return response.data;
+  },
+};
