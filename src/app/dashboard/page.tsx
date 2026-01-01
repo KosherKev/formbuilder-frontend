@@ -7,8 +7,8 @@ import { formService } from "@/lib/api/forms";
 import type { Form } from "@/lib/api/forms";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate, formatDateTime } from "@/lib/utils";
-import { Plus, FileText, BarChart3, Eye, MoreVertical, Copy, Trash2 } from "lucide-react";
+import { formatDate } from "@/lib/utils";
+import { Plus, FileText, BarChart3, Eye } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -41,8 +41,8 @@ export default function DashboardPage() {
       // Calculate stats
       const totalForms = response.pagination.total;
       const publishedForms = response.data.filter(f => f.status === "published").length;
-      const totalResponses = response.data.reduce((sum, f) => sum + f.analytics.totalSubmissions, 0);
-      const totalViews = response.data.reduce((sum, f) => sum + f.analytics.totalViews, 0);
+      const totalResponses = response.data.reduce((sum, f) => sum + (f.analytics?.totalSubmissions || 0), 0);
+      const totalViews = response.data.reduce((sum, f) => sum + (f.analytics?.totalViews || 0), 0);
       
       setStats({ totalForms, publishedForms, totalResponses, totalViews });
     } catch (error) {
@@ -69,6 +69,15 @@ export default function DashboardPage() {
     router.push("/login");
   };
 
+  // Show loading state while checking auth
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -81,12 +90,12 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">FormBuilder</h1>
-                <p className="text-sm text-gray-500">{user?.plan || "Free"} Plan</p>
+                <p className="text-sm text-gray-500 capitalize">{user.plan || "Free"} Plan</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                {user?.name}
+              <span className="text-sm text-gray-700 font-medium">
+                {user.name}
               </span>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 Logout
@@ -99,62 +108,62 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Stats Cards */}
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card className="bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Forms</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-700">Total Forms</CardTitle>
               <FileText className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalForms}</div>
+              <div className="text-2xl font-bold text-gray-900">{stats.totalForms}</div>
               <p className="text-xs text-gray-500">
-                {user?.planLimits.maxForms} forms limit
+                {user.planLimits?.maxForms || 3} forms limit
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Published</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-700">Published</CardTitle>
               <Eye className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.publishedForms}</div>
+              <div className="text-2xl font-bold text-gray-900">{stats.publishedForms}</div>
               <p className="text-xs text-gray-500">Live forms</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Views</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-700">Total Views</CardTitle>
               <BarChart3 className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalViews}</div>
+              <div className="text-2xl font-bold text-gray-900">{stats.totalViews}</div>
               <p className="text-xs text-gray-500">Across all forms</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Responses</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-700">Responses</CardTitle>
               <BarChart3 className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalResponses}</div>
+              <div className="text-2xl font-bold text-gray-900">{stats.totalResponses}</div>
               <p className="text-xs text-gray-500">Total submissions</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Forms List */}
-        <Card>
+        <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Your Forms</CardTitle>
-                <CardDescription>Manage and create new forms</CardDescription>
+                <CardTitle className="text-gray-900">Your Forms</CardTitle>
+                <CardDescription className="text-gray-600">Manage and create new forms</CardDescription>
               </div>
-              <Button onClick={handleCreateForm} className="bg-blue-500 hover:bg-blue-600">
+              <Button onClick={handleCreateForm} className="bg-blue-500 hover:bg-blue-600 text-white">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Form
               </Button>
@@ -168,8 +177,8 @@ export default function DashboardPage() {
             ) : forms.length === 0 ? (
               <div className="flex h-40 flex-col items-center justify-center space-y-3">
                 <FileText className="h-12 w-12 text-gray-400" />
-                <p className="text-gray-500">No forms yet. Create your first form to get started!</p>
-                <Button onClick={handleCreateForm} variant="outline">
+                <p className="text-gray-600">No forms yet. Create your first form to get started!</p>
+                <Button onClick={handleCreateForm} variant="outline" className="text-gray-700">
                   <Plus className="mr-2 h-4 w-4" />
                   Create Your First Form
                 </Button>
@@ -179,7 +188,7 @@ export default function DashboardPage() {
                 {forms.map((form) => (
                   <div
                     key={form._id}
-                    className="flex items-center justify-between rounded-lg border p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                    className="flex items-center justify-between rounded-lg border border-gray-200 p-4 hover:bg-gray-50 cursor-pointer transition-colors"
                     onClick={() => router.push(`/dashboard/forms/${form._id}/edit`)}
                   >
                     <div className="flex-1">
@@ -193,12 +202,12 @@ export default function DashboardPage() {
                           {form.status}
                         </span>
                       </div>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-gray-600">
                         {form.description || "No description"}
                       </p>
                       <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
-                        <span>{form.analytics.totalViews} views</span>
-                        <span>{form.analytics.totalSubmissions} responses</span>
+                        <span>{form.analytics?.totalViews || 0} views</span>
+                        <span>{form.analytics?.totalSubmissions || 0} responses</span>
                         <span>Updated {formatDate(form.updatedAt)}</span>
                       </div>
                     </div>
@@ -206,6 +215,7 @@ export default function DashboardPage() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="text-gray-700"
                         onClick={(e) => {
                           e.stopPropagation();
                           router.push(`/dashboard/forms/${form._id}/edit`);
@@ -216,6 +226,7 @@ export default function DashboardPage() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="text-gray-700"
                         onClick={(e) => {
                           e.stopPropagation();
                           router.push(`/dashboard/forms/${form._id}/responses`);
