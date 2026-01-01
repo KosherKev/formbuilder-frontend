@@ -150,10 +150,15 @@ export default function PublicFormPage() {
     try {
       setIsSubmitting(true);
       await responseService.submitForm(slug, {
-        answers: Object.entries(answers).map(([questionId, value]) => ({
-          questionId,
-          value,
-        })),
+        answers: Object.entries(answers).map(([questionId, value]) => {
+          const question = form?.questions.find(q => q.id === questionId);
+          return {
+            questionId,
+            questionType: question?.type || 'text',
+            questionLabel: question?.label || '',
+            value,
+          };
+        }),
       });
 
       setSubmitted(true);

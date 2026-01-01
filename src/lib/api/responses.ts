@@ -26,6 +26,8 @@ export interface ResponsesResponse {
 export interface SubmitFormData {
   answers: {
     questionId: string;
+    questionType: string;
+    questionLabel: string;
     value: any;
   }[];
 }
