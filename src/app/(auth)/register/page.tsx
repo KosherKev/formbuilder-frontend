@@ -69,7 +69,7 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md shadow-2xl border-0 bg-white">
         <CardHeader className="space-y-3 text-center pb-8">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-purple-500 to-purple-600 shadow-lg">
             <UserPlus className="h-8 w-8 text-white" />
           </div>
           <CardTitle className="text-3xl font-bold tracking-tight text-gray-900">
@@ -149,7 +149,7 @@ export default function RegisterPage() {
             </div>
 
             <Button
-              className="w-full h-11 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-md font-medium text-white"
+              className="w-full h-11 bg-linear-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-md font-medium text-white"
               type="submit"
               disabled={isLoading}
             >
