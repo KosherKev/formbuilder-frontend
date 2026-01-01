@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import Cookies from "js-cookie";
 import { authService, User } from "../api/auth";
 
 interface AuthState {
@@ -27,6 +28,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await authService.login({ email, password });
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
+      Cookies.set("token", response.token, { expires: 7 }); // Set cookie for 7 days
       set({
         user: response.user,
         token: response.token,
@@ -46,6 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await authService.register({ name, email, password });
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
+      Cookies.set("token", response.token, { expires: 7 }); // Set cookie for 7 days
       set({
         user: response.user,
         token: response.token,
@@ -67,6 +70,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      Cookies.remove("token");
       set({
         user: null,
         token: null,
@@ -84,6 +88,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       return;
     }
 
+    // Ensure cookie is synced with localStorage
+    if (!Cookies.get("token")) {
+      Cookies.set("token", token, { expires: 7 });
+    }
+
     set({ isLoading: true });
     try {
       const response = await authService.getMe();
@@ -96,6 +105,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      Cookies.remove("token");
       set({
         user: null,
         token: null,

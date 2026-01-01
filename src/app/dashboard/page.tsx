@@ -27,6 +27,12 @@ export default function DashboardPage() {
   }, [checkAuth]);
 
   useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [isLoading, user, router]);
+
+  useEffect(() => {
     if (user) {
       loadForms();
     }
