@@ -10,13 +10,13 @@ interface FormPreviewProps {
 
 export function FormPreview({ form, onClose }: FormPreviewProps) {
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="glass-panel rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-background/50 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between z-10">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Preview Mode</h2>
-            <p className="text-sm text-gray-500">This is how your form will look to respondents</p>
+            <h2 className="text-lg font-semibold text-foreground">Preview Mode</h2>
+            <p className="text-sm text-muted-foreground">This is how your form will look to respondents</p>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-5 w-5" />
@@ -24,15 +24,15 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
         </div>
 
         {/* Form Preview */}
-        <div className="p-8 bg-gray-50">
-          <Card className="p-8 bg-white max-w-xl mx-auto">
+        <div className="p-8">
+          <Card className="p-8 max-w-xl mx-auto border-white/10 bg-white/5">
             {/* Form Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-foreground mb-2">
                 {form.title}
               </h1>
               {form.description && (
-                <p className="text-gray-600">{form.description}</p>
+                <p className="text-muted-foreground">{form.description}</p>
               )}
             </div>
 
@@ -40,14 +40,14 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
             <div className="space-y-6">
               {form.questions.map((question, index) => (
                 <div key={question.id} className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-900">
+                  <label className="block text-sm font-medium text-foreground">
                     {index + 1}. {question.label}
                     {question.required && (
-                      <span className="text-red-500 ml-1">*</span>
+                      <span className="text-red-400 ml-1">*</span>
                     )}
                   </label>
                   {question.description && (
-                    <p className="text-sm text-gray-500">{question.description}</p>
+                    <p className="text-sm text-muted-foreground">{question.description}</p>
                   )}
 
                   {/* Render based on question type */}
@@ -57,7 +57,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                     <input
                       type={question.type === "email" ? "email" : "text"}
                       placeholder={question.placeholder}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                      className="w-full px-3 py-2 border border-white/10 bg-white/5 rounded-md focus:ring-2 focus:ring-primary focus:border-primary text-foreground placeholder:text-muted-foreground"
                       disabled
                     />
                   )}
@@ -66,7 +66,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                     <textarea
                       placeholder={question.placeholder}
                       rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                      className="w-full px-3 py-2 border border-white/10 bg-white/5 rounded-md focus:ring-2 focus:ring-primary focus:border-primary text-foreground placeholder:text-muted-foreground"
                       disabled
                     />
                   )}
@@ -77,7 +77,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                       placeholder={question.placeholder}
                       min={question.validation?.min}
                       max={question.validation?.max}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                      className="w-full px-3 py-2 border border-white/10 bg-white/5 rounded-md focus:ring-2 focus:ring-primary focus:border-primary text-foreground placeholder:text-muted-foreground"
                       disabled
                     />
                   )}
@@ -85,7 +85,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                   {question.type === "date" && (
                     <input
                       type="date"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                      className="w-full px-3 py-2 border border-white/10 bg-white/5 rounded-md focus:ring-2 focus:ring-primary focus:border-primary text-foreground placeholder:text-muted-foreground"
                       disabled
                     />
                   )}
@@ -95,7 +95,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                       {question.options?.map((option) => (
                         <label
                           key={option.id}
-                          className="flex items-center space-x-2 p-2 rounded hover:bg-gray-50"
+                          className="flex items-center space-x-2 p-2 rounded hover:bg-white/5"
                         >
                           <input
                             type="radio"

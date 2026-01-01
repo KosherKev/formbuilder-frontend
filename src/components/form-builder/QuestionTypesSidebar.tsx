@@ -31,10 +31,10 @@ const questionTypes = [
 
 export function QuestionTypesSidebar({ onAddQuestion }: QuestionTypesSidebarProps) {
   return (
-    <aside className="w-64 border-r bg-white p-4 overflow-y-auto">
+    <aside className="w-64 border-r border-white/10 bg-background/40 backdrop-blur-md p-4 overflow-y-auto">
       <div className="mb-4">
-        <h3 className="text-sm font-semibold text-gray-900 mb-1">Question Types</h3>
-        <p className="text-xs text-gray-500">Click to add to your form</p>
+        <h3 className="text-sm font-semibold text-foreground mb-1">Question Types</h3>
+        <p className="text-xs text-muted-foreground">Click to add to your form</p>
       </div>
       
       <div className="space-y-2">
@@ -42,17 +42,17 @@ export function QuestionTypesSidebar({ onAddQuestion }: QuestionTypesSidebarProp
           <button
             key={qt.type}
             onClick={() => onAddQuestion(qt.type)}
-            className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all group"
+            className="w-full text-left p-3 rounded-lg border border-white/5 hover:border-primary/50 hover:bg-white/5 transition-all group"
           >
             <div className="flex items-start space-x-3">
               <div className="shrink-0 mt-0.5">
-                <qt.icon className="h-5 w-5 text-gray-600 group-hover:text-blue-600" />
+                <qt.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 group-hover:text-blue-900">
+                <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
                   {qt.label}
                 </p>
-                <p className="text-xs text-gray-500 group-hover:text-blue-700">
+                <p className="text-xs text-muted-foreground group-hover:text-primary/80 transition-colors">
                   {qt.description}
                 </p>
               </div>

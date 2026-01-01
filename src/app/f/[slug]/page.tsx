@@ -115,23 +115,33 @@ export default function PublicFormPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden">
+        {/* Background Blobs */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <Card className="p-8 max-w-md w-full text-center bg-white">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
-            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden px-4">
+        {/* Background Blobs */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+        </div>
+        <Card className="p-8 max-w-md w-full text-center glass-panel border-0">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 mb-4">
+            <svg className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Form Not Found</h2>
-          <p className="text-gray-600">{error}</p>
+          <h2 className="text-xl font-semibold text-foreground mb-2">Form Not Found</h2>
+          <p className="text-muted-foreground">{error}</p>
         </Card>
       </div>
     );
@@ -141,17 +151,22 @@ export default function PublicFormPage() {
 
   if (submitted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <Card className="p-8 max-w-md w-full text-center bg-white">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
-            <CheckCircle2 className="h-6 w-6 text-green-600" />
+      <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden px-4">
+        {/* Background Blobs */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+        </div>
+        <Card className="p-8 max-w-md w-full text-center glass-panel border-0">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10 mb-4">
+            <CheckCircle2 className="h-6 w-6 text-green-500" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Thank You!</h2>
-          <p className="text-gray-600">
+          <h2 className="text-xl font-semibold text-foreground mb-2">Thank You!</h2>
+          <p className="text-muted-foreground">
             {form.settings?.thankYouMessage || "Your response has been recorded."}
           </p>
           {form.settings?.redirectUrl && (
-            <p className="text-sm text-gray-500 mt-4">Redirecting...</p>
+            <p className="text-sm text-muted-foreground mt-4">Redirecting...</p>
           )}
         </Card>
       </div>
@@ -159,30 +174,37 @@ export default function PublicFormPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-background relative overflow-hidden py-12 px-4">
+      {/* Background Blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] right-[30%] w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="max-w-2xl mx-auto relative z-10">
         {/* Form Header */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center p-3 bg-blue-500 rounded-2xl mb-4">
-            <FileText className="h-8 w-8 text-white" />
+          <div className="inline-flex items-center justify-center p-3 bg-primary/20 rounded-2xl mb-4 backdrop-blur-sm border border-white/10">
+            <FileText className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">{form.title}</h1>
+          <h1 className="text-4xl font-bold text-foreground mb-3">{form.title}</h1>
           {form.description && (
-            <p className="text-lg text-gray-600 max-w-xl mx-auto">{form.description}</p>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">{form.description}</p>
           )}
         </div>
 
         {/* Form Card */}
-        <Card className="p-8 bg-white shadow-lg">
+        <Card className="p-8 glass-panel border-0">
           <form onSubmit={handleSubmit} className="space-y-8">
             {form.questions.map((question, index) => (
               <div key={question.id} className="space-y-3">
-                <Label className="text-base font-medium text-gray-900">
+                <Label className="text-base font-medium text-foreground">
                   {index + 1}. {question.label}
-                  {question.required && <span className="text-red-500 ml-1">*</span>}
+                  {question.required && <span className="text-red-400 ml-1">*</span>}
                 </Label>
                 {question.description && (
-                  <p className="text-sm text-gray-600">{question.description}</p>
+                  <p className="text-sm text-muted-foreground">{question.description}</p>
                 )}
 
                 {/* Render input based on question type */}
@@ -191,21 +213,21 @@ export default function PublicFormPage() {
                 )}
 
                 {validationErrors[question.id] && (
-                  <p className="text-sm text-red-600">{validationErrors[question.id]}</p>
+                  <p className="text-sm text-red-400">{validationErrors[question.id]}</p>
                 )}
               </div>
             ))}
 
             {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-md">
+                <p className="text-sm text-red-400">{error}</p>
               </div>
             )}
 
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white text-base font-medium"
+              className="w-full h-12 glass-button text-base font-medium"
             >
               {isSubmitting ? (
                 <>
@@ -221,8 +243,8 @@ export default function PublicFormPage() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
-            Powered by <span className="font-semibold text-blue-600">FormBuilder</span>
+          <p className="text-sm text-muted-foreground">
+            Powered by <span className="font-semibold text-primary">FormBuilder</span>
           </p>
         </div>
       </div>
@@ -235,6 +257,8 @@ function renderQuestionInput(
   value: any,
   onChange: (value: any) => void
 ) {
+  const commonInputClasses = "bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:bg-white/10";
+
   switch (question.type) {
     case "short_text":
     case "email":
@@ -245,7 +269,7 @@ function renderQuestionInput(
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={question.placeholder}
-          className="bg-white text-gray-900"
+          className={commonInputClasses}
         />
       );
 
@@ -256,7 +280,7 @@ function renderQuestionInput(
           onChange={(e) => onChange(e.target.value)}
           placeholder={question.placeholder}
           rows={4}
-          className="bg-white text-gray-900"
+          className={commonInputClasses}
         />
       );
 
@@ -269,7 +293,7 @@ function renderQuestionInput(
           placeholder={question.placeholder}
           min={question.validation?.min}
           max={question.validation?.max}
-          className="bg-white text-gray-900"
+          className={commonInputClasses}
         />
       );
 
@@ -279,7 +303,7 @@ function renderQuestionInput(
           type="date"
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
-          className="bg-white text-gray-900"
+          className={commonInputClasses}
         />
       );
 
@@ -289,7 +313,9 @@ function renderQuestionInput(
           {question.options?.map((option) => (
             <label
               key={option.id}
-              className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+              className={`flex items-center space-x-3 p-3 rounded-lg border border-white/10 cursor-pointer transition-colors ${
+                value === option.value ? "bg-primary/20 border-primary/50" : "hover:bg-white/5 bg-white/5"
+              }`}
             >
               <input
                 type="radio"
@@ -297,9 +323,9 @@ function renderQuestionInput(
                 value={option.value}
                 checked={value === option.value}
                 onChange={(e) => onChange(e.target.value)}
-                className="h-4 w-4 text-blue-600"
+                className="h-4 w-4 text-primary bg-transparent border-white/30"
               />
-              <span className="text-gray-900">{option.label}</span>
+              <span className="text-foreground">{option.label}</span>
             </label>
           ))}
         </div>
@@ -311,7 +337,9 @@ function renderQuestionInput(
           {question.options?.map((option) => (
             <label
               key={option.id}
-              className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+              className={`flex items-center space-x-3 p-3 rounded-lg border border-white/10 cursor-pointer transition-colors ${
+                (value || []).includes(option.value) ? "bg-primary/20 border-primary/50" : "hover:bg-white/5 bg-white/5"
+              }`}
             >
               <input
                 type="checkbox"
@@ -325,9 +353,9 @@ function renderQuestionInput(
                     onChange(currentValues.filter((v: string) => v !== option.value));
                   }
                 }}
-                className="h-4 w-4 text-blue-600 rounded"
+                className="h-4 w-4 text-primary rounded bg-transparent border-white/30"
               />
-              <span className="text-gray-900">{option.label}</span>
+              <span className="text-foreground">{option.label}</span>
             </label>
           ))}
         </div>
@@ -338,11 +366,11 @@ function renderQuestionInput(
         <select
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+          className={`w-full px-4 py-2 border border-white/10 rounded-md focus:ring-2 focus:ring-primary focus:border-primary bg-white/5 text-foreground ${commonInputClasses}`}
         >
-          <option value="">Select an option</option>
+          <option value="" className="bg-slate-900 text-foreground">Select an option</option>
           {question.options?.map((option) => (
-            <option key={option.id} value={option.value}>
+            <option key={option.id} value={option.value} className="bg-slate-900 text-foreground">
               {option.label}
             </option>
           ))}
@@ -351,7 +379,7 @@ function renderQuestionInput(
 
     case "file_upload":
       return (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+        <div className="border-2 border-dashed border-white/20 rounded-lg p-8 text-center hover:border-primary/50 transition-colors bg-white/5">
           <input
             type="file"
             onChange={(e) => {
@@ -363,7 +391,7 @@ function renderQuestionInput(
           />
           <label htmlFor={`file-${question.id}`} className="cursor-pointer">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-muted-foreground"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -375,7 +403,7 @@ function renderQuestionInput(
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               {value?.name || "Click to upload or drag and drop"}
             </p>
           </label>

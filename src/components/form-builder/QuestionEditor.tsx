@@ -40,9 +40,9 @@ export function QuestionEditor({ question, onUpdate, onClose }: QuestionEditorPr
   };
 
   return (
-    <Card className="p-6 bg-white sticky top-24">
+    <Card className="p-6 sticky top-24">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-900">Edit Question</h3>
+        <h3 className="text-sm font-semibold text-foreground">Edit Question</h3>
         <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
           <X className="h-4 w-4" />
         </Button>
@@ -51,24 +51,24 @@ export function QuestionEditor({ question, onUpdate, onClose }: QuestionEditorPr
       <div className="space-y-4">
         {/* Question Label */}
         <div className="space-y-2">
-          <Label className="text-gray-700">Question Label</Label>
+          <Label className="text-foreground">Question Label</Label>
           <Input
             value={question.label}
             onChange={(e) => onUpdate({ label: e.target.value })}
             placeholder="Enter question text"
-            className="bg-white text-gray-900"
+            className="text-foreground"
           />
         </div>
 
         {/* Description */}
         <div className="space-y-2">
-          <Label className="text-gray-700">Description (Optional)</Label>
+          <Label className="text-foreground">Description (Optional)</Label>
           <Textarea
             value={question.description || ""}
             onChange={(e) => onUpdate({ description: e.target.value })}
             placeholder="Add helpful context..."
             rows={2}
-            className="bg-white text-gray-900"
+            className="text-foreground"
           />
         </div>
 
@@ -79,12 +79,12 @@ export function QuestionEditor({ question, onUpdate, onClose }: QuestionEditorPr
           question.type === "phone" ||
           question.type === "number") && (
           <div className="space-y-2">
-            <Label className="text-gray-700">Placeholder</Label>
+            <Label className="text-foreground">Placeholder</Label>
             <Input
               value={question.placeholder || ""}
               onChange={(e) => onUpdate({ placeholder: e.target.value })}
               placeholder="Enter placeholder text"
-              className="bg-white text-gray-900"
+              className="text-foreground"
             />
           </div>
         )}
@@ -93,7 +93,7 @@ export function QuestionEditor({ question, onUpdate, onClose }: QuestionEditorPr
         {hasOptions && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-gray-700">Options</Label>
+              <Label className="text-foreground">Options</Label>
               <Button
                 type="button"
                 variant="outline"

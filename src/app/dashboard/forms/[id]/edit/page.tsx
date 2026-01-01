@@ -174,17 +174,25 @@ export default function FormBuilderPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-20 animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl opacity-20 animate-pulse delay-1000" />
+        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!currentForm) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">Form not found</p>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-20 animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl opacity-20 animate-pulse delay-1000" />
+        </div>
+        <div className="text-center glass-panel p-8">
+          <p className="text-muted-foreground mb-4">Form not found</p>
           <Button onClick={() => router.push("/dashboard")}>Back to Dashboard</Button>
         </div>
       </div>
@@ -201,20 +209,28 @@ export default function FormBuilderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Blobs */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[100px]" />
+        <div className="absolute top-[40%] left-[40%] w-[30%] h-[30%] bg-accent/10 rounded-full blur-[100px]" />
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b bg-white shadow-sm">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-background/50 backdrop-blur-xl shadow-sm">
         <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.push("/dashboard")}
+              className="text-muted-foreground hover:text-foreground hover:bg-white/5"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <div className="border-l h-8" />
+            <div className="border-l border-white/10 h-8" />
             <div>
               <Input
                 value={title}
@@ -222,38 +238,41 @@ export default function FormBuilderPage() {
                   setTitle(e.target.value);
                   setHasUnsavedChanges(true);
                 }}
-                className="text-lg font-semibold border-none shadow-none focus-visible:ring-0 px-2 bg-transparent text-gray-900"
+                className="text-lg font-semibold border-none shadow-none focus-visible:ring-0 px-2 bg-transparent text-foreground placeholder:text-muted-foreground/50"
                 placeholder="Untitled Form"
               />
-              <p className="text-xs text-gray-500 px-2">
+              <p className="text-xs text-muted-foreground px-2">
                 {user?.name} • {currentForm.status}
-                {hasUnsavedChanges && <span className="text-orange-500 ml-2">• Unsaved changes</span>}
+                {hasUnsavedChanges && <span className="text-orange-400 ml-2">• Unsaved changes</span>}
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => router.push(`/dashboard/forms/${formId}/responses`)}
+              className="text-muted-foreground hover:text-foreground hover:bg-white/5"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               Responses
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => router.push(`/dashboard/forms/${formId}/analytics`)}
+              className="text-muted-foreground hover:text-foreground hover:bg-white/5"
             >
               <BarChart3 className="h-4 w-4 mr-2" />
               Analytics
             </Button>
-            <div className="border-l h-8 mx-2" />
+            <div className="border-l border-white/10 h-8 mx-2" />
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setShowPreview(true)}
+              className="text-muted-foreground hover:text-foreground hover:bg-white/5"
             >
               <Eye className="h-4 w-4 mr-2" />
               Preview
@@ -262,6 +281,7 @@ export default function FormBuilderPage() {
               variant="outline"
               size="sm"
               onClick={handlePublish}
+              className="border-white/10 bg-white/5 text-foreground hover:bg-white/10"
             >
               <Globe className="h-4 w-4 mr-2" />
               {currentForm.status === "published" ? "Unpublish" : "Publish"}
@@ -270,7 +290,7 @@ export default function FormBuilderPage() {
               size="sm"
               onClick={handleSave}
               disabled={isSaving || !hasUnsavedChanges}
-              className="bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50"
+              className="bg-primary hover:bg-primary/90 text-white disabled:opacity-50 shadow-lg shadow-primary/20"
             >
               {isSaving ? (
                 <>
@@ -289,24 +309,30 @@ export default function FormBuilderPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex">
+      <div className="flex h-[calc(100vh-65px)]">
         {/* Question Types Sidebar */}
         <QuestionTypesSidebar onAddQuestion={addQuestion} />
 
         {/* Form Builder Canvas */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-6 overflow-y-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-4 bg-white">
-              <TabsTrigger value="build" className="text-gray-700">
+            <TabsList className="mb-4 bg-muted/50 backdrop-blur-sm border border-white/10">
+              <TabsTrigger 
+                value="build" 
+                className="data-[state=active]:bg-background/50 data-[state=active]:backdrop-blur-sm data-[state=active]:text-foreground text-muted-foreground"
+              >
                 Build
               </TabsTrigger>
-              <TabsTrigger value="settings" className="text-gray-700">
+              <TabsTrigger 
+                value="settings"
+                className="data-[state=active]:bg-background/50 data-[state=active]:backdrop-blur-sm data-[state=active]:text-foreground text-muted-foreground"
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="build">
+            <TabsContent value="build" className="mt-0">
               <FormBuilderCanvas
                 questions={questions}
                 selectedQuestionId={selectedQuestionId}
@@ -323,7 +349,7 @@ export default function FormBuilderPage() {
               />
             </TabsContent>
 
-            <TabsContent value="settings">
+            <TabsContent value="settings" className="mt-0">
               <FormSettings
                 form={currentForm}
                 onUpdate={handleSettingsUpdate}

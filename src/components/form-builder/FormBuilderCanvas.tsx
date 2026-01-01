@@ -70,15 +70,15 @@ export function FormBuilderCanvas({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Main Canvas */}
       <div className="lg:col-span-2 space-y-4">
-        <Card className="p-6 bg-white">
+        <Card className="p-6">
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-700">Form Description (Optional)</Label>
+              <Label className="text-foreground">Form Description (Optional)</Label>
               <Textarea
                 value={description}
                 onChange={(e) => onDescriptionChange(e.target.value)}
                 placeholder="Add a description to help respondents understand your form..."
-                className="mt-2 bg-white text-gray-900"
+                className="mt-2"
                 rows={3}
               />
             </div>
@@ -86,11 +86,11 @@ export function FormBuilderCanvas({
         </Card>
 
         {questions.length === 0 ? (
-          <Card className="p-12 bg-white text-center">
+          <Card className="p-12 text-center">
             <div className="mx-auto flex flex-col items-center justify-center space-y-3">
-              <div className="rounded-full bg-gray-100 p-4">
+              <div className="rounded-full bg-white/5 p-4">
                 <svg
-                  className="h-12 w-12 text-gray-400"
+                  className="h-12 w-12 text-muted-foreground"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

@@ -48,13 +48,13 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <Card className="p-6 bg-white">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Form Settings</h3>
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Form Settings</h3>
         
         <div className="space-y-6">
           {/* Thank You Message */}
           <div className="space-y-2">
-            <Label className="text-gray-700">Thank You Message</Label>
+            <Label className="text-foreground">Thank You Message</Label>
             <Textarea
               value={localSettings.thankYouMessage || ""}
               onChange={(e) =>
@@ -62,38 +62,38 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
               }
               placeholder="Thank you for your submission!"
               rows={3}
-              className="bg-white text-gray-900"
+              className="text-foreground"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Message shown after form submission
             </p>
           </div>
 
           {/* Submit Button Text */}
           <div className="space-y-2">
-            <Label className="text-gray-700">Submit Button Text</Label>
+            <Label className="text-foreground">Submit Button Text</Label>
             <Input
               value={localSettings.submitButtonText || "Submit"}
               onChange={(e) =>
                 handleLocalChange({ submitButtonText: e.target.value })
               }
               placeholder="Submit"
-              className="bg-white text-gray-900"
+              className="text-foreground"
             />
           </div>
 
           {/* Redirect URL */}
           <div className="space-y-2">
-            <Label className="text-gray-700">Redirect URL (Optional)</Label>
+            <Label className="text-foreground">Redirect URL (Optional)</Label>
             <Input
               value={localSettings.redirectUrl || ""}
               onChange={(e) =>
                 handleLocalChange({ redirectUrl: e.target.value })
               }
               placeholder="https://example.com/thank-you"
-              className="bg-white text-gray-900"
+              className="text-foreground"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Redirect users after submission (leave blank to show thank you message)
             </p>
           </div>

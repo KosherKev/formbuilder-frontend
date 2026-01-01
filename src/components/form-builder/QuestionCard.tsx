@@ -39,10 +39,10 @@ export function QuestionCard({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`p-4 bg-white cursor-pointer transition-all ${
+      className={`p-4 cursor-pointer transition-all ${
         isSelected
-          ? "ring-2 ring-blue-500 shadow-md"
-          : "hover:shadow-md hover:border-gray-300"
+          ? "ring-2 ring-primary shadow-lg bg-white/10"
+          : "hover:bg-white/5 border-white/10"
       }`}
       onClick={onSelect}
     >
@@ -51,7 +51,7 @@ export function QuestionCard({
         <button
           {...attributes}
           {...listeners}
-          className="mt-1 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+          className="mt-1 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
           onClick={(e) => e.stopPropagation()}
         >
           <GripVertical className="h-5 w-5" />
@@ -62,20 +62,20 @@ export function QuestionCard({
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <h4 className="text-sm font-medium text-gray-900">
+                <h4 className="text-sm font-medium text-foreground">
                   {question.label}
                 </h4>
                 {question.required && (
-                  <span className="text-red-500 text-sm">*</span>
+                  <span className="text-red-400 text-sm">*</span>
                 )}
               </div>
               {question.description && (
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {question.description}
                 </p>
               )}
               <div className="mt-2">
-                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-white/10 text-white border border-white/10">
                   {question.type.replace("_", " ")}
                 </span>
               </div>
@@ -90,9 +90,9 @@ export function QuestionCard({
                   e.stopPropagation();
                   onDuplicate();
                 }}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
               >
-                <Copy className="h-4 w-4 text-gray-600" />
+                <Copy className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"

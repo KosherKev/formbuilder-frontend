@@ -66,17 +66,25 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-20 animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl opacity-20 animate-pulse delay-1000" />
+        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!form || !analytics) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">Form not found</p>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-20 animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl opacity-20 animate-pulse delay-1000" />
+        </div>
+        <div className="text-center glass-panel p-8">
+          <p className="text-muted-foreground mb-4">Form not found</p>
           <Button onClick={() => router.push("/dashboard")}>Back to Dashboard</Button>
         </div>
       </div>
@@ -92,9 +100,16 @@ export default function AnalyticsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Blobs */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[100px]" />
+        <div className="absolute top-[40%] left-[40%] w-[30%] h-[30%] bg-accent/10 rounded-full blur-[100px]" />
+      </div>
+
       {/* Header */}
-      <header className="border-b bg-white">
+      <header className="border-b border-white/10 bg-background/50 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -102,14 +117,15 @@ export default function AnalyticsPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push(`/dashboard/forms/${formId}/edit`)}
+                className="text-muted-foreground hover:text-foreground hover:bg-white/5"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Form
               </Button>
               <div className="border-l h-8" />
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">{form.title}</h1>
-                <p className="text-sm text-gray-500">Analytics</p>
+                <h1 className="text-xl font-semibold text-foreground">{form.title}</h1>
+                <p className="text-sm text-muted-foreground">Analytics</p>
               </div>
             </div>
           </div>
@@ -119,55 +135,55 @@ export default function AnalyticsPage() {
       <main className="mx-auto max-w-7xl px-6 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white">
+          <Card className="glass-panel border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700">Total Views</CardTitle>
-              <Users className="h-4 w-4 text-gray-500" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Views</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{analytics.totalViews}</div>
-              <p className="text-xs text-gray-500 mt-1">Form page visits</p>
+              <div className="text-2xl font-bold text-foreground">{analytics.totalViews}</div>
+              <p className="text-xs text-muted-foreground mt-1">Form page visits</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white">
+          <Card className="glass-panel border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700">Submissions</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-gray-500" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Submissions</CardTitle>
+              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-foreground">
                 {analytics.totalSubmissions}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Completed responses</p>
+              <p className="text-xs text-muted-foreground mt-1">Completed responses</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white">
+          <Card className="glass-panel border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 Completion Rate
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-gray-500" />
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-foreground">
                 {analytics.completionRate}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Views to submissions</p>
+              <p className="text-xs text-muted-foreground mt-1">Views to submissions</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white">
+          <Card className="glass-panel border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700">Avg. Time</CardTitle>
-              <Clock className="h-4 w-4 text-gray-500" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Avg. Time</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-foreground">
                 {formatTime(analytics.averageCompletionTime)}
               </div>
-              <p className="text-xs text-gray-500 mt-1">To complete</p>
+              <p className="text-xs text-muted-foreground mt-1">To complete</p>
             </CardContent>
           </Card>
         </div>
@@ -175,21 +191,24 @@ export default function AnalyticsPage() {
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Submissions Over Time */}
-          <Card className="bg-white">
+          <Card className="glass-panel border-0">
             <CardHeader>
-              <CardTitle className="text-gray-900">Submissions Over Time</CardTitle>
+              <CardTitle className="text-foreground">Submissions Over Time</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={submissionsOverTime}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="date" stroke="rgba(255,255,255,0.5)" />
+                  <YAxis stroke="rgba(255,255,255,0.5)" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0F172A', borderColor: 'rgba(255,255,255,0.1)', color: '#fff' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="count"
-                    stroke="#3b82f6"
+                    stroke="#6366F1"
                     strokeWidth={2}
                   />
                 </LineChart>
@@ -198,9 +217,9 @@ export default function AnalyticsPage() {
           </Card>
 
           {/* Completion Status */}
-          <Card className="bg-white">
+          <Card className="glass-panel border-0">
             <CardHeader>
-              <CardTitle className="text-gray-900">Completion Status</CardTitle>
+              <CardTitle className="text-foreground">Completion Status</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -219,26 +238,32 @@ export default function AnalyticsPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0F172A', borderColor: 'rgba(255,255,255,0.1)', color: '#fff' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
           {/* Question Response Rates */}
-          <Card className="bg-white lg:col-span-2">
+          <Card className="glass-panel border-0 lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-gray-900">Question Response Rates</CardTitle>
+              <CardTitle className="text-foreground">Question Response Rates</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={questionResponseRates}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="question" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="responses" fill="#3b82f6" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="question" stroke="rgba(255,255,255,0.5)" />
+                  <YAxis stroke="rgba(255,255,255,0.5)" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0F172A', borderColor: 'rgba(255,255,255,0.1)', color: '#fff' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                  <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }} />
+                  <Bar dataKey="responses" fill="#6366F1" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
