@@ -20,7 +20,10 @@ import {
   Loader2,
   Globe,
   BarChart3,
-  MessageSquare
+  MessageSquare,
+  Share2,
+  Copy,
+  Check
 } from "lucide-react";
 import type { Question } from "@/lib/api/forms";
 
@@ -37,6 +40,8 @@ export default function FormBuilderPage() {
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("build");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
@@ -170,6 +175,17 @@ export default function FormBuilderPage() {
   const reorderQuestions = (newQuestions: Question[]) => {
     setQuestions(newQuestions.map((q, index) => ({ ...q, order: index })));
     setHasUnsavedChanges(true);
+  };
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/f/${currentForm?.slug}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast({
+      title: "Copied!",
+      description: "Form link copied to clipboard",
+    });
   };
 
   if (isLoading) {
@@ -341,9 +357,14 @@ export default function FormBuilderPage() {
                 onDeleteQuestion={deleteQuestion}
                 onDuplicateQuestion={duplicateQuestion}
                 onReorderQuestions={reorderQuestions}
+                title={title}
+                onUpdateTitle={(newTitle: string) => {
+                  setTitle(newTitle);
+                  setHasUnsavedChanges(true);
+                }}
                 description={description}
-                onDescriptionChange={(desc) => {
-                  setDescription(desc);
+                onUpdateDescription={(newDesc: string) => {
+                  setDescription(newDesc);
                   setHasUnsavedChanges(true);
                 }}
               />

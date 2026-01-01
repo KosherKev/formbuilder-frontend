@@ -56,6 +56,7 @@ export interface ConditionalLogic {
   enabled: boolean;
   conditions: Condition[];
   action: "show" | "hide" | "jump_to";
+  logicOperator?: "AND" | "OR";
   targetQuestionId?: string;
 }
 

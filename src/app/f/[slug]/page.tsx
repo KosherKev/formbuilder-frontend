@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { formService } from "@/lib/api/forms";
 import { responseService } from "@/lib/api/responses";
@@ -13,6 +13,43 @@ import { Textarea } from "@/components/ui/textarea";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Loader2, CheckCircle2, FileText } from "lucide-react";
 import { validatePhoneNumber } from "@/lib/utils";
+
+// Logic evaluation function
+function evaluateLogic(question: Question, answers: { [key: string]: any }): boolean {
+  if (!question.conditionalLogic?.enabled || !question.conditionalLogic?.conditions) {
+    return true; // Always show if no logic defined
+  }
+
+  const { conditions, logicOperator = 'AND' } = question.conditionalLogic;
+
+  const results = conditions.map((condition) => {
+    const value = answers[condition.questionId];
+    const targetValue = condition.value;
+
+    switch (condition.operator) {
+      case 'equals':
+        return value === targetValue;
+      case 'not_equals':
+        return value !== targetValue;
+      case 'contains':
+        return String(value || '').toLowerCase().includes(String(targetValue).toLowerCase());
+      case 'not_contains':
+        return !String(value || '').toLowerCase().includes(String(targetValue).toLowerCase());
+      case 'greater_than':
+        return Number(value) > Number(targetValue);
+      case 'less_than':
+        return Number(value) < Number(targetValue);
+      default:
+        return true;
+    }
+  });
+
+  if (logicOperator === 'AND') {
+    return results.every(r => r);
+  } else {
+    return results.some(r => r);
+  }
+}
 
 export default function PublicFormPage() {
   const params = useParams();
@@ -34,7 +71,6 @@ export default function PublicFormPage() {
     try {
       setIsLoading(true);
       setError(null);
-      // Try to get form by slug (public endpoint)
       const response = await formService.getFormBySlug(slug);
       setForm(response.data);
     } catch (err: any) {
@@ -44,10 +80,30 @@ export default function PublicFormPage() {
     }
   };
 
+  // Filter questions based on conditional logic
+  const visibleQuestions = useMemo(() => {
+    if (!form) return [];
+
+    return form.questions.filter((question) => {
+      if (!question.conditionalLogic?.enabled) return true;
+
+      const shouldShow = evaluateLogic(question, answers);
+      const action = question.conditionalLogic.action;
+
+      if (action === 'show') {
+        return shouldShow;
+      } else if (action === 'hide') {
+        return !shouldShow;
+      }
+
+      return true;
+    });
+  }, [form, answers]);
+
   const validateForm = (): boolean => {
     const errors: { [key: string]: string } = {};
     
-    form?.questions.forEach((question) => {
+    visibleQuestions.forEach((question) => {
       if (question.required && !answers[question.id]) {
         errors[question.id] = "This field is required";
       }
@@ -189,7 +245,7 @@ export default function PublicFormPage() {
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-150 h-150 bg-primary/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-150 h-150 bg-secondary/10 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] right-[30%] w-150 h-150 bg-accent/5 rounded-full blur-[100px]" />
+        <div className="absolute top-[20%] right-[30%] w-100 h-100 bg-accent/5 rounded-full blur-[100px]" />
       </div>
 
       <div className="max-w-2xl mx-auto relative z-10">
@@ -204,10 +260,30 @@ export default function PublicFormPage() {
           )}
         </div>
 
+        {/* Progress Bar */}
+        {form.settings?.showProgressBar && visibleQuestions.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+              <span>Progress</span>
+              <span>
+                {Object.keys(answers).filter(id => visibleQuestions.some(q => q.id === id && answers[id])).length} / {visibleQuestions.length}
+              </span>
+            </div>
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary transition-all duration-300"
+                style={{
+                  width: `${(Object.keys(answers).filter(id => visibleQuestions.some(q => q.id === id && answers[id])).length / visibleQuestions.length) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Form Card */}
         <Card className="p-8 glass-panel border-0">
           <form onSubmit={handleSubmit} className="space-y-8">
-            {form.questions.map((question, index) => (
+            {visibleQuestions.map((question, index) => (
               <div key={question.id} className="space-y-3">
                 <Label className="text-base font-medium text-foreground">
                   {index + 1}. {question.label}

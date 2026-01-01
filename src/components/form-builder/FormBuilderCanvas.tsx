@@ -31,8 +31,10 @@ interface FormBuilderCanvasProps {
   onDeleteQuestion: (id: string) => void;
   onDuplicateQuestion: (id: string) => void;
   onReorderQuestions: (questions: Question[]) => void;
+  title: string;
   description: string;
-  onDescriptionChange: (description: string) => void;
+  onUpdateTitle: (title: string) => void;
+  onUpdateDescription: (description: string) => void;
 }
 
 export function FormBuilderCanvas({
@@ -43,17 +45,19 @@ export function FormBuilderCanvas({
   onDeleteQuestion,
   onDuplicateQuestion,
   onReorderQuestions,
+  title,
   description,
-  onDescriptionChange,
+  onUpdateTitle,
+  onUpdateDescription,
 }: FormBuilderCanvasProps) {
+  const selectedQuestion = questions.find((q) => q.id === selectedQuestionId) || null;
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  const selectedQuestion = questions.find((q) => q.id === selectedQuestionId);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -62,69 +66,77 @@ export function FormBuilderCanvas({
       const oldIndex = questions.findIndex((q) => q.id === active.id);
       const newIndex = questions.findIndex((q) => q.id === over.id);
 
-      onReorderQuestions(arrayMove(questions, oldIndex, newIndex));
+      const newQuestions = arrayMove(questions, oldIndex, newIndex).map((q, index) => ({
+        ...q,
+        order: index,
+      }));
+
+      onReorderQuestions(newQuestions);
     }
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Main Canvas */}
-      <div className="lg:col-span-2 space-y-4">
-        <Card className="p-6">
+      <div className="lg:col-span-2 space-y-6">
+        {/* Form Header */}
+        <Card className="p-6 glass-panel border-0">
           <div className="space-y-4">
             <div>
-              <Label className="text-foreground">Form Description (Optional)</Label>
+              <Label className="text-foreground mb-2">Form Title</Label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => onUpdateTitle(e.target.value)}
+                className="w-full text-2xl font-bold bg-transparent border-0 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0"
+                placeholder="Untitled Form"
+              />
+            </div>
+            <div>
+              <Label className="text-foreground mb-2">Description</Label>
               <Textarea
                 value={description}
-                onChange={(e) => onDescriptionChange(e.target.value)}
-                placeholder="Add a description to help respondents understand your form..."
-                className="mt-2"
-                rows={3}
+                onChange={(e) => onUpdateDescription(e.target.value)}
+                placeholder="Add a description for your form..."
+                rows={2}
+                className="text-foreground resize-none"
               />
             </div>
           </div>
         </Card>
 
-        {questions.length === 0 ? (
-          <Card className="p-12 text-center">
-            <div className="mx-auto flex flex-col items-center justify-center space-y-3">
-              <div className="rounded-full bg-white/5 p-4">
-                <svg
-                  className="h-12 w-12 text-muted-foreground"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  No questions yet
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Add questions from the sidebar to start building your form
-                </p>
-              </div>
-            </div>
-          </Card>
-        ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={questions.map((q) => q.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              <div className="space-y-3">
-                {questions.map((question) => (
+        {/* Questions List */}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={questions.map((q) => q.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-4">
+              {questions.length === 0 ? (
+                <Card className="p-12 text-center glass-panel border-2 border-dashed">
+                  <div className="space-y-3">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                      <svg
+                        className="h-8 w-8 text-primary"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">No questions yet</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Add your first question using the toolbar above
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ) : (
+                questions.map((question) => (
                   <QuestionCard
                     key={question.id}
                     question={question}
@@ -133,11 +145,11 @@ export function FormBuilderCanvas({
                     onDelete={() => onDeleteQuestion(question.id)}
                     onDuplicate={() => onDuplicateQuestion(question.id)}
                   />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
+                ))
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
       </div>
 
       {/* Question Editor Sidebar */}
@@ -145,15 +157,16 @@ export function FormBuilderCanvas({
         {selectedQuestion ? (
           <QuestionEditor
             question={selectedQuestion}
+            allQuestions={questions}
             onUpdate={(updates) => onUpdateQuestion(selectedQuestion.id, updates)}
             onClose={() => onSelectQuestion(null)}
           />
         ) : (
-          <Card className="p-6 bg-white sticky top-24">
+          <Card className="p-6 glass-panel border-0 sticky top-24">
             <div className="text-center space-y-3">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                 <svg
-                  className="h-6 w-6 text-gray-400"
+                  className="h-6 w-6 text-primary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -167,11 +180,11 @@ export function FormBuilderCanvas({
                 </svg>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-gray-900">
+                <h3 className="text-sm font-semibold text-foreground">
                   No question selected
                 </h3>
-                <p className="mt-1 text-xs text-gray-500">
-                  Click on a question to edit its properties
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Click on a question to edit its properties or add logic
                 </p>
               </div>
             </div>
