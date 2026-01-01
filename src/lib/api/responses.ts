@@ -7,7 +7,12 @@ export interface Response {
     questionId: string;
     value: any;
   }[];
-  submittedAt: Date;
+  submittedAt?: Date; // Deprecated, use timing.submittedAt
+  timing?: {
+    startedAt: Date;
+    submittedAt: Date;
+    timeToComplete?: number;
+  };
   ipAddress?: string;
   userAgent?: string;
 }

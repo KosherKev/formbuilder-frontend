@@ -278,7 +278,10 @@ function prepareSubmissionsOverTime(responses: Response[]) {
   const grouped: { [key: string]: number } = {};
 
   responses.forEach((response) => {
-    const date = new Date(response.submittedAt).toLocaleDateString("en-US", {
+    const dateStr = response.timing?.submittedAt || response.submittedAt;
+    if (!dateStr) return;
+    
+    const date = new Date(dateStr).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });

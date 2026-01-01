@@ -235,7 +235,7 @@ export default function ResponsesPage() {
                           onClick={() => setSelectedResponse(response)}
                         >
                           <td className="py-3 px-4 text-sm text-foreground">
-                            {formatDateTime(response.submittedAt)}
+                            {formatDateTime(response.timing?.submittedAt || response.submittedAt || new Date())}
                           </td>
                           {form.questions.slice(0, 3).map((question) => (
                             <td key={question.id} className="py-3 px-4 text-sm text-muted-foreground">
@@ -301,7 +301,7 @@ export default function ResponsesPage() {
                   <div className="pb-4 border-b border-white/10">
                     <p className="text-sm text-muted-foreground">Submitted</p>
                     <p className="text-sm font-medium text-foreground">
-                      {formatDateTime(selectedResponse.submittedAt)}
+                      {formatDateTime(selectedResponse.timing?.submittedAt || selectedResponse.submittedAt || "")}
                     </p>
                   </div>
 
