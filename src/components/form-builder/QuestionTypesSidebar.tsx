@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import {
   Type,
   AlignLeft,
@@ -46,7 +45,7 @@ export function QuestionTypesSidebar({ onAddQuestion }: QuestionTypesSidebarProp
             className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all group"
           >
             <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 mt-0.5">
+              <div className="shrink-0 mt-0.5">
                 <qt.icon className="h-5 w-5 text-gray-600 group-hover:text-blue-600" />
               </div>
               <div className="flex-1 min-w-0">

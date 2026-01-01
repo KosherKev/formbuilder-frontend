@@ -46,29 +46,29 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md shadow-2xl border-0 bg-white">
+      <Card className="w-full max-w-md glass-panel border-0 text-white">
         <CardHeader className="space-y-3 text-center pb-8">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 to-blue-600 shadow-lg">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-indigo-600 shadow-lg shadow-primary/25">
             <FileText className="h-8 w-8 text-white" />
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight text-gray-900">
+          <CardTitle className="text-3xl font-bold tracking-tight text-white">
             Welcome Back
           </CardTitle>
-          <CardDescription className="text-base text-gray-600">
+          <CardDescription className="text-base text-gray-300">
             Sign in to your FormBuilder account
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-200">
                 Email Address
               </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                className="h-11 bg-white text-gray-900"
+                className="h-11 glass-input placeholder:text-gray-400"
                 required
                 value={formData.email}
                 onChange={(e) =>
@@ -77,14 +77,14 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-200">
                 Password
               </Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="h-11 bg-white text-gray-900"
+                className="h-11 glass-input placeholder:text-gray-400"
                 required
                 value={formData.password}
                 onChange={(e) =>
@@ -94,7 +94,7 @@ export default function LoginPage() {
             </div>
 
             <Button
-              className="w-full h-11 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md font-medium text-white"
+              className="w-full h-11 glass-button font-medium text-white hover:bg-primary/20"
               type="submit"
               disabled={isLoading}
             >
@@ -104,10 +104,10 @@ export default function LoginPage() {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-300" />
+                <span className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">
+                <span className="bg-transparent px-2 text-gray-400">
                   Don't have an account?
                 </span>
               </div>
@@ -116,7 +116,7 @@ export default function LoginPage() {
             <div className="text-center">
               <Link
                 href="/register"
-                className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                className="text-sm font-medium text-primary hover:text-primary/80 hover:underline"
               >
                 Create a new account
               </Link>

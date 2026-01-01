@@ -67,28 +67,28 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md shadow-2xl border-0 bg-white">
+      <Card className="w-full max-w-md glass-panel border-0 text-white">
         <CardHeader className="space-y-3 text-center pb-8">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-purple-500 to-purple-600 shadow-lg">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-secondary to-pink-600 shadow-lg shadow-secondary/25">
             <UserPlus className="h-8 w-8 text-white" />
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight text-gray-900">
+          <CardTitle className="text-3xl font-bold tracking-tight text-white">
             Create Account
           </CardTitle>
-          <CardDescription className="text-base text-gray-600">
+          <CardDescription className="text-base text-gray-300">
             Get started with FormBuilder for free
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="name" className="text-sm font-medium text-gray-200">
                 Full Name
               </Label>
               <Input
                 id="name"
                 placeholder="John Doe"
-                className="h-11 bg-white text-gray-900"
+                className="h-11 glass-input placeholder:text-gray-400"
                 required
                 value={formData.name}
                 onChange={(e) =>
@@ -97,14 +97,14 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-200">
                 Email Address
               </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                className="h-11 bg-white text-gray-900"
+                className="h-11 glass-input placeholder:text-gray-400"
                 required
                 value={formData.email}
                 onChange={(e) =>
@@ -113,33 +113,33 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-200">
                 Password
               </Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="Min. 8 characters"
-                className="h-11 bg-white text-gray-900"
+                className="h-11 glass-input placeholder:text-gray-400"
                 required
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-400">
                 Must be at least 8 characters
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-200">
                 Confirm Password
               </Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 placeholder="Re-enter your password"
-                className="h-11 bg-white text-gray-900"
+                className="h-11 glass-input placeholder:text-gray-400"
                 required
                 value={formData.confirmPassword}
                 onChange={(e) =>
@@ -149,7 +149,7 @@ export default function RegisterPage() {
             </div>
 
             <Button
-              className="w-full h-11 bg-linear-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-md font-medium text-white"
+              className="w-full h-11 glass-button font-medium text-white hover:bg-secondary/20"
               type="submit"
               disabled={isLoading}
             >
@@ -159,10 +159,10 @@ export default function RegisterPage() {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-300" />
+                <span className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">
+                <span className="bg-transparent px-2 text-gray-400">
                   Already have an account?
                 </span>
               </div>
@@ -171,7 +171,7 @@ export default function RegisterPage() {
             <div className="text-center">
               <Link
                 href="/login"
-                className="text-sm font-medium text-purple-600 hover:text-purple-700 hover:underline"
+                className="text-sm font-medium text-secondary hover:text-secondary/80 hover:underline"
               >
                 Sign in to your account
               </Link>

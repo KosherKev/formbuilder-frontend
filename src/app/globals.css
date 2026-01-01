@@ -4,50 +4,90 @@
 
 @layer theme {
   :root {
-    --color-background: 0 0% 100%;
-    --color-foreground: 240 10% 3.9%;
-    --color-card: 0 0% 100%;
-    --color-card-foreground: 240 10% 3.9%;
-    --color-popover: 0 0% 100%;
-    --color-popover-foreground: 240 10% 3.9%;
-    --color-primary: 221.2 83.2% 53.3%;
-    --color-primary-foreground: 210 40% 98%;
-    --color-secondary: 240 4.8% 95.9%;
-    --color-secondary-foreground: 240 5.9% 10%;
-    --color-muted: 240 4.8% 95.9%;
-    --color-muted-foreground: 240 3.8% 46.1%;
-    --color-accent: 240 4.8% 95.9%;
-    --color-accent-foreground: 240 5.9% 10%;
-    --color-destructive: 0 84.2% 60.2%;
+    /* Base - Slate 900 */
+    --color-background: 222 47% 11%;
+    --color-foreground: 0 0% 100%;
+
+    /* Card - Glass Effect Base (slightly lighter than bg) */
+    --color-card: 222 47% 13%; 
+    --color-card-foreground: 0 0% 100%;
+ 
+    /* Popover */
+    --color-popover: 222 47% 11%;
+    --color-popover-foreground: 0 0% 100%;
+ 
+    /* Primary - Indigo */
+    --color-primary: 239 84% 67%;
+    --color-primary-foreground: 0 0% 100%;
+ 
+    /* Secondary - Pink */
+    --color-secondary: 330 81% 60%;
+    --color-secondary-foreground: 0 0% 100%;
+ 
+    /* Muted */
+    --color-muted: 217 33% 17%;
+    --color-muted-foreground: 215 20% 65%;
+ 
+    /* Accent - Amber */
+    --color-accent: 38 92% 50%;
+    --color-accent-foreground: 0 0% 100%;
+ 
+    /* Destructive */
+    --color-destructive: 0 62.8% 30.6%;
     --color-destructive-foreground: 0 0% 98%;
-    --color-border: 240 5.9% 90%;
-    --color-input: 240 5.9% 90%;
-    --color-ring: 221.2 83.2% 53.3%;
+ 
+    /* Borders & Input - Subtle White */
+    --color-border: 217 33% 20%;
+    --color-input: 217 33% 20%;
+    --color-ring: 239 84% 67%;
+ 
     --radius: 0.5rem;
+
+    /* Success - Emerald */
+    --color-success: 160 84% 39%;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --color-background: 240 10% 3.9%;
-      --color-foreground: 0 0% 98%;
-      --color-card: 240 10% 3.9%;
-      --color-card-foreground: 0 0% 98%;
-      --color-popover: 240 10% 3.9%;
-      --color-popover-foreground: 0 0% 98%;
-      --color-primary: 221.2 83.2% 53.3%;
-      --color-primary-foreground: 210 40% 98%;
-      --color-secondary: 240 3.7% 15.9%;
-      --color-secondary-foreground: 0 0% 98%;
-      --color-muted: 240 3.7% 15.9%;
-      --color-muted-foreground: 240 5% 64.9%;
-      --color-accent: 240 3.7% 15.9%;
-      --color-accent-foreground: 0 0% 98%;
-      --color-destructive: 0 62.8% 30.6%;
-      --color-destructive-foreground: 0 0% 98%;
-      --color-border: 240 3.7% 15.9%;
-      --color-input: 240 3.7% 15.9%;
-      --color-ring: 221.2 83.2% 53.3%;
-    }
+  /* Force dark mode behavior even without class="dark" if desired, 
+     but standard is to have these in :root or .dark. 
+     Since the design is dark-first, I put them in :root. */
+}
+
+@layer utilities {
+  .glass-panel {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.05)
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+  }
+
+  .glass-button {
+    background: rgba(99, 102, 241, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .glass-button:hover {
+    background: rgba(99, 102, 241, 0.2);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.2);
+  }
+  
+  .glass-input {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+  
+  .glass-input:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(99, 102, 241, 0.5);
+    outline: none;
   }
 }
 
