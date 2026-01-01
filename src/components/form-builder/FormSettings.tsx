@@ -334,7 +334,7 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
                     {localSettings.enableNotifications && localSettings.notificationEmails?.length > 0 
                       ? `Email to: ${localSettings.notificationEmails.join(', ')}`
                       : 'No email notifications configured'}
-                    {localSettings.enableSMSNotifications && localSettings.notificationPhones?.length > 0 
+                    {localSettings.enableSMSNotifications && localSettings.notificationPhones && localSettings.notificationPhones.length > 0 
                       ? ` | SMS to: ${localSettings.notificationPhones.join(', ')}`
                       : localSettings.enableSMSNotifications ? ' | No SMS notifications configured' : ''}
                   </p>

@@ -54,7 +54,7 @@ export const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
     const countries = React.useMemo(() => {
       const preferred = preferredCountries
         .map(code => defaultCountries.find(c => c[1] === code.toLowerCase()))
-        .filter(Boolean);
+        .filter((c) => !!c) as typeof defaultCountries;
       
       const others = defaultCountries.filter(
         c => !preferredCountries.includes(c[1])
