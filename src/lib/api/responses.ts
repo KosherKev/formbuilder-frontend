@@ -48,7 +48,7 @@ export const responseService = {
 
   // Submit a form (public endpoint, no auth)
   submitForm: async (formIdOrSlug: string, data: SubmitFormData): Promise<{ success: boolean; data: Response }> => {
-    const response = await apiClient.post(`/forms/${formIdOrSlug}/submit`, data);
+    const response = await apiClient.post(`/responses/${formIdOrSlug}`, data);
     return response.data;
   },
 

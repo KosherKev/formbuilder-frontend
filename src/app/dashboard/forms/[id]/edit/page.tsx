@@ -113,6 +113,13 @@ export default function FormBuilderPage() {
     }
   };
 
+  const handleCopyLink = () => {
+    if (!currentForm) return;
+    navigator.clipboard.writeText(`${window.location.origin}/f/${currentForm.slug}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   // Debounced settings update - only updates local state, doesn't save to API
   const handleSettingsUpdate = useCallback((updates: any) => {
     setHasUnsavedChanges(true);
@@ -175,17 +182,6 @@ export default function FormBuilderPage() {
   const reorderQuestions = (newQuestions: Question[]) => {
     setQuestions(newQuestions.map((q, index) => ({ ...q, order: index })));
     setHasUnsavedChanges(true);
-  };
-
-  const handleCopyLink = () => {
-    const url = `${window.location.origin}/f/${currentForm?.slug}`;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    toast({
-      title: "Copied!",
-      description: "Form link copied to clipboard",
-    });
   };
 
   if (isLoading) {
@@ -293,6 +289,17 @@ export default function FormBuilderPage() {
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </Button>
+            {currentForm.status === "published" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowShare(true)}
+                className="text-muted-foreground hover:text-foreground hover:bg-white/5"
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -379,6 +386,51 @@ export default function FormBuilderPage() {
           </Tabs>
         </div>
       </div>
+
+      {showShare && currentForm && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="glass-panel rounded-xl shadow-2xl max-w-md w-full p-6 space-y-6 animate-in fade-in zoom-in duration-200">
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-foreground">Share Form</h2>
+              <p className="text-sm text-muted-foreground">
+                Your form is published and ready to collect responses.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Public Link</label>
+              <div className="flex items-center gap-2">
+                <Input 
+                  readOnly 
+                  value={`${window.location.origin}/f/${currentForm.slug}`}
+                  className="bg-white/5 border-white/10 text-foreground"
+                />
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={handleCopyLink}
+                  className="shrink-0 border-white/10 bg-white/5 hover:bg-white/10"
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <Copy className="h-4 w-4 text-foreground" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button 
+                onClick={() => setShowShare(false)}
+                className="bg-primary hover:bg-primary/90 text-white"
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
