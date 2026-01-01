@@ -88,6 +88,8 @@ export interface FormSettings {
   enableCaptcha: boolean;
   enableNotifications: boolean;
   notificationEmails: string[];
+  enableSMSNotifications?: boolean;
+  notificationPhones?: string[];
   customCSS?: string;
   webhookUrl?: string;
   webhookEvents?: string[];
