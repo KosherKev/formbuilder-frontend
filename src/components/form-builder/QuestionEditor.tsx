@@ -6,8 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X, Plus, Trash2, Settings2, Zap } from "lucide-react";
+import { X, Plus, Trash2, Settings2, Zap, Type } from "lucide-react";
 import { LogicBuilder } from "./LogicBuilder";
+import { TextStyleControls } from "./TextStyleControls";
 import type { Question } from "@/lib/api/forms";
 
 interface QuestionEditorProps {
@@ -55,7 +56,7 @@ export function QuestionEditor({ question, allQuestions, onUpdate, onClose }: Qu
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 glass-panel">
+          <TabsList className="grid w-full grid-cols-3 glass-panel">
             <TabsTrigger value="settings" className="flex items-center gap-2 text-xs">
               <Settings2 className="h-3.5 w-3.5" />
               Settings
@@ -63,6 +64,10 @@ export function QuestionEditor({ question, allQuestions, onUpdate, onClose }: Qu
             <TabsTrigger value="logic" className="flex items-center gap-2 text-xs">
               <Zap className="h-3.5 w-3.5" />
               Logic
+            </TabsTrigger>
+            <TabsTrigger value="style" className="flex items-center gap-2 text-xs">
+              <Type className="h-3.5 w-3.5" />
+              Style
             </TabsTrigger>
           </TabsList>
 
@@ -213,6 +218,22 @@ export function QuestionEditor({ question, allQuestions, onUpdate, onClose }: Qu
 
           <TabsContent value="logic" className="mt-4">
             {/* Logic Builder Component */}
+          </TabsContent>
+
+          <TabsContent value="style" className="mt-4">
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                <p className="text-sm text-blue-200">
+                  <strong>Accessibility:</strong> Customize how this question appears to make it easier to read
+                </p>
+              </div>
+              
+              <TextStyleControls
+                value={question.textStyle || {}}
+                onChange={(style) => onUpdate({ textStyle: style })}
+                label="Question Text Style"
+              />
+            </div>
           </TabsContent>
         </Tabs>
       </Card>

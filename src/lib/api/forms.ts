@@ -37,6 +37,14 @@ export interface Question {
   validation?: QuestionValidation;
   conditionalLogic?: ConditionalLogic;
   order: number;
+  textStyle?: TextStyle;
+}
+
+export interface TextStyle {
+  fontSize?: 'sm' | 'base' | 'lg' | 'xl';
+  fontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+  textAlign?: 'left' | 'center' | 'right';
+  lineHeight?: 'tight' | 'normal' | 'relaxed' | 'loose';
 }
 
 export interface QuestionOption {
@@ -106,6 +114,8 @@ export interface CreateFormData {
   title: string;
   description?: string;
   questions?: Question[];
+  settings?: Partial<FormSettings>;
+  theme?: Partial<FormTheme>;
 }
 
 export const formService = {

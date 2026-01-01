@@ -14,6 +14,23 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Loader2, CheckCircle2, FileText } from "lucide-react";
 import { validatePhoneNumber } from "@/lib/utils";
 
+// Helper function to get text style classes
+const getTextStyleClasses = (textStyle?: {
+  fontSize?: 'sm' | 'base' | 'lg' | 'xl';
+  fontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+  textAlign?: 'left' | 'center' | 'right';
+  lineHeight?: 'tight' | 'normal' | 'relaxed' | 'loose';
+}) => {
+  if (!textStyle) return '';
+  
+  const fontSize = textStyle.fontSize || 'base';
+  const fontWeight = textStyle.fontWeight || 'normal';
+  const textAlign = textStyle.textAlign || 'left';
+  const lineHeight = textStyle.lineHeight || 'normal';
+  
+  return `text-${fontSize} font-${fontWeight} text-${textAlign} leading-${lineHeight}`;
+};
+
 // Logic evaluation function
 function evaluateLogic(question: Question, answers: { [key: string]: any }): boolean {
   if (!question.conditionalLogic?.enabled || !question.conditionalLogic?.conditions) {
@@ -66,6 +83,38 @@ export default function PublicFormPage() {
   useEffect(() => {
     loadForm();
   }, [slug]);
+
+  // Apply theme to the page
+  useEffect(() => {
+    if (form?.theme) {
+      const root = document.documentElement;
+      
+      // Apply theme colors
+      if (form.theme.colors?.primary) {
+        root.style.setProperty('--primary', form.theme.colors.primary);
+      }
+      if (form.theme.colors?.background) {
+        root.style.setProperty('--background', form.theme.colors.background);
+      }
+      
+      // Apply background gradient if it exists
+      if (form.theme.backgroundGradient) {
+        document.body.style.background = form.theme.backgroundGradient;
+        document.body.style.backgroundAttachment = 'fixed';
+      }
+      
+      // Apply font family
+      if (form.theme.fonts?.body) {
+        root.style.fontFamily = form.theme.fonts.body;
+      }
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.background = '';
+      document.body.style.backgroundAttachment = '';
+    };
+  }, [form]);
 
   const loadForm = async () => {
     try {
@@ -290,12 +339,14 @@ export default function PublicFormPage() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {visibleQuestions.map((question, index) => (
               <div key={question.id} className="space-y-3">
-                <Label className="text-base font-medium text-foreground">
+                <Label className={`text-base font-medium text-foreground ${getTextStyleClasses(question.textStyle)}`}>
                   {index + 1}. {question.label}
                   {question.required && <span className="text-red-400 ml-1">*</span>}
                 </Label>
                 {question.description && (
-                  <p className="text-sm text-muted-foreground">{question.description}</p>
+                  <p className={`text-sm text-muted-foreground ${getTextStyleClasses(question.textStyle)}`}>
+                    {question.description}
+                  </p>
                 )}
 
                 {/* Render input based on question type */}

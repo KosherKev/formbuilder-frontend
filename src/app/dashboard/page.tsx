@@ -4,17 +4,22 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/auth";
 import { formService } from "@/lib/api/forms";
+import { templateService } from "@/lib/api/templates";
 import type { Form } from "@/lib/api/forms";
+import type { Template } from "@/lib/api/templates";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TemplateSelector } from "@/components/templates";
 import { formatDate } from "@/lib/utils";
-import { Plus, FileText, BarChart3, Eye } from "lucide-react";
+import { Plus, FileText, BarChart3, Eye, Sparkles } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, checkAuth, logout } = useAuthStore();
   const [forms, setForms] = useState<Form[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [popularTemplates, setPopularTemplates] = useState<Template[]>([]);
   const [stats, setStats] = useState({
     totalForms: 0,
     publishedForms: 0,
@@ -35,6 +40,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (user) {
       loadForms();
+      loadPopularTemplates();
     }
   }, [user]);
 
@@ -58,7 +64,16 @@ export default function DashboardPage() {
     }
   };
 
-  const handleCreateForm = async () => {
+  const loadPopularTemplates = async () => {
+    try {
+      const response = await templateService.getPopularTemplates(3);
+      setPopularTemplates(response.data.data);
+    } catch (error) {
+      console.error("Failed to load templates:", error);
+    }
+  };
+
+  const handleCreateBlankForm = async () => {
     try {
       const response = await formService.createForm({
         title: "Untitled Form",
@@ -67,6 +82,42 @@ export default function DashboardPage() {
       router.push(`/dashboard/forms/${response.data._id}/edit`);
     } catch (error: any) {
       alert(error.response?.data?.message || "Failed to create form");
+    }
+  };
+
+  const handleUseTemplate = async (template: Template) => {
+    try {
+      // Create form with template data
+      const response = await formService.createForm({
+        title: template.name,
+        description: template.description,
+        questions: template.questions,
+        settings: template.settings,
+        theme: {
+          id: template.themeId || 'modern-minimal',
+          name: template.name,
+          description: template.description,
+          preview: '',
+          colors: {
+            primary: '#6366f1',
+            secondary: '#ec4899',
+            background: '#0f172a',
+            foreground: '#ffffff',
+            accent: '#f59e0b',
+            muted: '#64748b'
+          },
+          fonts: {
+            heading: 'Inter',
+            body: 'Inter'
+          },
+          borderRadius: 'lg',
+          cardStyle: 'glass'
+        }
+      });
+      
+      router.push(`/dashboard/forms/${response.data._id}/edit`);
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Failed to create form from template");
     }
   };
 
@@ -85,7 +136,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="glass-panel border-b border-white/10 sticky top-0 z-50">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
@@ -95,15 +146,13 @@ export default function DashboardPage() {
                 <FileText className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">FormBuilder</h1>
-                <p className="text-sm text-gray-400 capitalize">{user.plan || "Free"} Plan</p>
+                <h1 className="text-xl font-bold text-foreground">FormBuilder</h1>
+                <p className="text-sm text-muted-foreground capitalize">{user.plan || "Free"} Plan</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-200 font-medium">
-                {user.name}
-              </span>
-              <Button variant="glass" size="sm" onClick={handleLogout} className="border border-white/20 hover:bg-white/10">
+              <p className="text-sm text-muted-foreground">Welcome, {user.name}</p>
+              <Button variant="outline" onClick={handleLogout} className="glass-button">
                 Logout
               </Button>
             </div>
@@ -111,143 +160,214 @@ export default function DashboardPage() {
         </div>
       </header>
 
+      {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Stats Cards */}
-        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="glass-panel border-0 text-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Total Forms</CardTitle>
-              <FileText className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.totalForms}</div>
-              <p className="text-xs text-gray-400">
-                {user.planLimits?.maxForms || 3} forms limit
-              </p>
-            </CardContent>
-          </Card>
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card
+              className="p-6 glass-panel border-0 hover:border-primary/50 cursor-pointer transition-all group"
+              onClick={handleCreateBlankForm}
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Plus className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Blank Form</h3>
+                  <p className="text-sm text-muted-foreground">Start from scratch</p>
+                </div>
+              </div>
+            </Card>
 
-          <Card className="glass-panel border-0 text-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Published</CardTitle>
-              <Eye className="h-4 w-4 text-success" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.publishedForms}</div>
-              <p className="text-xs text-gray-400">Live forms</p>
-            </CardContent>
-          </Card>
+            <Card
+              className="p-6 glass-panel border-0 hover:border-primary/50 cursor-pointer transition-all group"
+              onClick={() => setShowTemplateSelector(true)}
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Sparkles className="h-6 w-6 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">From Template</h3>
+                  <p className="text-sm text-muted-foreground">Use pre-built form</p>
+                </div>
+              </div>
+            </Card>
 
-          <Card className="glass-panel border-0 text-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Total Views</CardTitle>
-              <BarChart3 className="h-4 w-4 text-accent" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.totalViews}</div>
-              <p className="text-xs text-gray-400">Across all forms</p>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-panel border-0 text-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Responses</CardTitle>
-              <BarChart3 className="h-4 w-4 text-secondary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.totalResponses}</div>
-              <p className="text-xs text-gray-400">Total submissions</p>
-            </CardContent>
-          </Card>
+            <Card className="p-6 glass-panel border-0">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Import File</h3>
+                  <p className="text-sm text-muted-foreground">Upload existing form</p>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
 
-        {/* Forms List */}
-        <Card className="glass-panel border-0 text-white">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-white">Your Forms</CardTitle>
-                <CardDescription className="text-gray-400">Manage and create new forms</CardDescription>
-              </div>
-              <Button onClick={handleCreateForm} className="glass-button bg-primary/20 text-white hover:bg-primary/30 border border-primary/30">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Form
+        {/* Stats */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Overview</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="glass-panel border-0">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-foreground">Total Forms</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-foreground">{stats.totalForms}</div>
+              </CardContent>
+            </Card>
+
+            <Card className="glass-panel border-0">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-foreground">Published</CardTitle>
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-foreground">{stats.publishedForms}</div>
+              </CardContent>
+            </Card>
+
+            <Card className="glass-panel border-0">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-foreground">Total Views</CardTitle>
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-foreground">{stats.totalViews}</div>
+              </CardContent>
+            </Card>
+
+            <Card className="glass-panel border-0">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-foreground">Responses</CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-foreground">{stats.totalResponses}</div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Popular Templates */}
+        {popularTemplates.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-foreground">Popular Templates</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowTemplateSelector(true)}
+                className="text-primary"
+              >
+                View All →
               </Button>
             </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex h-40 items-center justify-center">
-                <div className="text-gray-400">Loading forms...</div>
-              </div>
-            ) : forms.length === 0 ? (
-              <div className="flex h-40 flex-col items-center justify-center space-y-3">
-                <FileText className="h-12 w-12 text-gray-600" />
-                <p className="text-gray-400">No forms yet. Create your first form to get started!</p>
-                <Button onClick={handleCreateForm} variant="outline" className="border-white/10 text-gray-300 hover:bg-white/5 hover:text-white bg-transparent">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Your First Form
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {forms.map((form) => (
-                  <div
-                    key={form._id}
-                    className="flex items-center justify-between rounded-lg border border-white/10 p-4 hover:bg-white/5 cursor-pointer transition-colors bg-white/5 backdrop-blur-sm"
-                    onClick={() => router.push(`/dashboard/forms/${form._id}/edit`)}
-                  >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {popularTemplates.map((template) => (
+                <Card
+                  key={template._id}
+                  className="p-6 glass-panel border-0 hover:border-primary/50 cursor-pointer transition-all group"
+                  onClick={() => handleUseTemplate(template)}
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <span className="text-3xl">{template.icon}</span>
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <h3 className="font-medium text-white">{form.title}</h3>
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          form.status === "published" 
-                            ? "bg-green-500/10 text-green-400 border border-green-500/20" 
-                            : "bg-gray-500/10 text-gray-400 border border-gray-500/20"
-                        }`}>
-                          {form.status}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-sm text-gray-400">
-                        {form.description || "No description"}
+                      <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                        {template.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {template.description}
                       </p>
-                      <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
-                        <span>{form.analytics?.totalViews || 0} views</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span>{template.questions.length} questions</span>
+                    <span>•</span>
+                    <span>~{template.estimatedTime} min</span>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recent Forms */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-foreground">Recent Forms</h2>
+            <Button variant="ghost" size="sm" onClick={() => router.push("/dashboard/forms")}>
+              View All →
+            </Button>
+          </div>
+
+          {isLoading ? (
+            <div className="text-center py-12 text-muted-foreground">Loading forms...</div>
+          ) : forms.length === 0 ? (
+            <Card className="glass-panel border-0 p-12 text-center">
+              <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No forms yet</h3>
+              <p className="text-muted-foreground mb-6">Create your first form to get started</p>
+              <Button onClick={() => setShowTemplateSelector(true)} className="glass-button">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Form
+              </Button>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {forms.map((form) => (
+                <Card
+                  key={form._id}
+                  className="p-6 glass-panel border-0 hover:border-primary/50 cursor-pointer transition-all"
+                  onClick={() => router.push(`/dashboard/forms/${form._id}/edit`)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-foreground mb-1">{form.title}</h3>
+                      {form.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-1">{form.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <span>{form.questions.length} questions</span>
+                        <span>•</span>
                         <span>{form.analytics?.totalSubmissions || 0} responses</span>
+                        <span>•</span>
                         <span>Updated {formatDate(form.updatedAt)}</span>
                       </div>
                     </div>
-                    <div className="ml-4 flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-400 hover:text-white hover:bg-white/10"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/dashboard/forms/${form._id}/edit`);
-                        }}
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          form.status === "published"
+                            ? "bg-green-500/20 text-green-400"
+                            : "bg-yellow-500/20 text-yellow-400"
+                        }`}
                       >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-400 hover:text-white hover:bg-white/10"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/dashboard/forms/${form._id}/responses`);
-                        }}
-                      >
-                        <BarChart3 className="h-4 w-4" />
-                      </Button>
+                        {form.status}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
+
+      {/* Template Selector Modal */}
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        onCreateBlank={handleCreateBlankForm}
+        onUseTemplate={handleUseTemplate}
+      />
     </div>
   );
 }
