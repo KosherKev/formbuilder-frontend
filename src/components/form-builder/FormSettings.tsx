@@ -211,16 +211,17 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
 
         {/* Notification Settings */}
         <TabsContent value="notifications" className="space-y-6 mt-6">
+          {/* Email Notifications */}
           <Card className="p-6 glass-panel border-0">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Email Notifications</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">📧 Email Notifications</h3>
             
             <div className="space-y-4">
-              {/* Enable Notifications */}
+              {/* Enable Email Notifications */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label className="text-foreground">Email Notifications</Label>
                   <p className="text-xs text-muted-foreground">
-                    Get notified when someone submits
+                    Get notified via email when someone submits
                   </p>
                 </div>
                 <Switch
@@ -249,10 +250,96 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
                     className="text-foreground"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Comma-separated list of email addresses
+                    Comma-separated list of email addresses to notify
                   </p>
                 </div>
               )}
+            </div>
+          </Card>
+
+          {/* SMS Notifications */}
+          <Card className="p-6 glass-panel border-0">
+            <h3 className="text-lg font-semibold text-foreground mb-4">📱 SMS Notifications</h3>
+            
+            <div className="space-y-4">
+              {/* Enable SMS Notifications */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="text-foreground">SMS Notifications</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Get notified via SMS when someone submits
+                  </p>
+                </div>
+                <Switch
+                  checked={localSettings.enableSMSNotifications ?? false}
+                  onCheckedChange={(checked) =>
+                    handleImmediateChange({ enableSMSNotifications: checked })
+                  }
+                />
+              </div>
+
+              {/* Notification Phones */}
+              {localSettings.enableSMSNotifications && (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-foreground">Notification Phone Number(s)</Label>
+                    <Input
+                      value={localSettings.notificationPhones?.join(", ") || ""}
+                      onChange={(e) =>
+                        handleLocalChange({
+                          notificationPhones: e.target.value
+                            .split(",")
+                            .map((phone) => phone.trim())
+                            .filter(Boolean),
+                        })
+                      }
+                      placeholder="+233244000000, +233201234567"
+                      className="text-foreground"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Phone numbers in international format (e.g., +233244000000)
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                    <p className="text-xs text-amber-200">
+                      💡 <strong>Tip:</strong> SMS notifications are powered by Texify. Standard SMS rates apply.
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </Card>
+
+          {/* Notification Preview */}
+          <Card className="p-6 glass-panel border-0 bg-primary/5">
+            <h3 className="text-sm font-semibold text-foreground mb-3">📬 Who Gets Notified?</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-start gap-2">
+                <span className="text-primary">•</span>
+                <div>
+                  <p className="text-foreground font-medium">Form Submitter</p>
+                  <p className="text-muted-foreground text-xs">
+                    Receives confirmation {localSettings.enableNotifications && 'email'}
+                    {localSettings.enableNotifications && localSettings.enableSMSNotifications && ' and '}
+                    {localSettings.enableSMSNotifications && 'SMS'} (if email/phone question exists in form)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-primary">•</span>
+                <div>
+                  <p className="text-foreground font-medium">Form Owner (You)</p>
+                  <p className="text-muted-foreground text-xs">
+                    {localSettings.enableNotifications && localSettings.notificationEmails?.length > 0 
+                      ? `Email to: ${localSettings.notificationEmails.join(', ')}`
+                      : 'No email notifications configured'}
+                    {localSettings.enableSMSNotifications && localSettings.notificationPhones?.length > 0 
+                      ? ` | SMS to: ${localSettings.notificationPhones.join(', ')}`
+                      : localSettings.enableSMSNotifications ? ' | No SMS notifications configured' : ''}
+                  </p>
+                </div>
+              </div>
             </div>
           </Card>
         </TabsContent>
