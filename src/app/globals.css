@@ -46,10 +46,6 @@
     /* Success - Emerald */
     --color-success: 160 84% 39%;
   }
-
-  /* Force dark mode behavior even without class="dark" if desired, 
-     but standard is to have these in :root or .dark. 
-     Since the design is dark-first, I put them in :root. */
 }
 
 @layer utilities {
@@ -99,5 +95,40 @@
   body {
     background-color: hsl(var(--color-background));
     color: hsl(var(--color-foreground));
+  }
+
+  /* Phone Input Dark Theme Overrides */
+  .react-international-phone-input-container {
+    width: 100%;
+  }
+
+  .react-international-phone-input {
+    color: hsl(var(--color-foreground)) !important;
+  }
+
+  .react-international-phone-country-selector-button {
+    border-color: hsl(var(--color-input)) !important;
+  }
+
+  .react-international-phone-country-selector-dropdown {
+    background-color: hsl(var(--color-popover) / 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(20px);
+  }
+
+  .react-international-phone-country-selector-dropdown__list-item {
+    color: hsl(var(--color-foreground)) !important;
+  }
+
+  .react-international-phone-country-selector-dropdown__list-item:hover {
+    background-color: hsl(var(--color-accent) / 0.1) !important;
+  }
+
+  .react-international-phone-country-selector-dropdown__list-item--selected {
+    background-color: hsl(var(--color-primary) / 0.2) !important;
+  }
+
+  .react-international-phone-country-selector-button__flag-emoji {
+    font-size: 1.2em;
   }
 }

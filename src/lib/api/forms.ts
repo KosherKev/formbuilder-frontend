@@ -1,4 +1,5 @@
 import api from "./client";
+import type { FormTheme } from "../themes";
 
 export interface Form {
   _id: string;
@@ -89,12 +90,6 @@ export interface FormSettings {
   customCSS?: string;
   webhookUrl?: string;
   webhookEvents?: string[];
-}
-
-export interface FormTheme {
-  primaryColor: string;
-  backgroundColor: string;
-  fontFamily: string;
 }
 
 export interface FormAnalytics {

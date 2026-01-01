@@ -10,7 +10,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Loader2, CheckCircle2, FileText } from "lucide-react";
+import { validatePhoneNumber } from "@/lib/utils";
 
 export default function PublicFormPage() {
   const params = useParams();
@@ -55,6 +57,14 @@ export default function PublicFormPage() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(answers[question.id])) {
           errors[question.id] = "Please enter a valid email address";
+        }
+      }
+
+      // Phone validation
+      if (question.type === "phone" && answers[question.id]) {
+        const validation = validatePhoneNumber(answers[question.id]);
+        if (!validation.valid) {
+          errors[question.id] = validation.message;
         }
       }
 
@@ -118,8 +128,8 @@ export default function PublicFormPage() {
       <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden">
         {/* Background Blobs */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+          <div className="absolute top-[-10%] left-[-10%] w-150 h-150 bg-primary/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-150 h-150 bg-secondary/10 rounded-full blur-[120px]" />
         </div>
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
@@ -131,8 +141,8 @@ export default function PublicFormPage() {
       <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden px-4">
         {/* Background Blobs */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+          <div className="absolute top-[-10%] left-[-10%] w-150 h-150 bg-primary/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-150 h-150 bg-secondary/10 rounded-full blur-[120px]" />
         </div>
         <Card className="p-8 max-w-md w-full text-center glass-panel border-0">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 mb-4">
@@ -154,8 +164,8 @@ export default function PublicFormPage() {
       <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden px-4">
         {/* Background Blobs */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+          <div className="absolute top-[-10%] left-[-10%] w-150 h-150 bg-primary/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-150 h-150 bg-secondary/10 rounded-full blur-[120px]" />
         </div>
         <Card className="p-8 max-w-md w-full text-center glass-panel border-0">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10 mb-4">
@@ -177,9 +187,9 @@ export default function PublicFormPage() {
     <div className="min-h-screen bg-background relative overflow-hidden py-12 px-4">
       {/* Background Blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] right-[30%] w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-150 h-150 bg-primary/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-150 h-150 bg-secondary/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] right-[30%] w-150 h-150 bg-accent/5 rounded-full blur-[100px]" />
       </div>
 
       <div className="max-w-2xl mx-auto relative z-10">
@@ -262,14 +272,23 @@ function renderQuestionInput(
   switch (question.type) {
     case "short_text":
     case "email":
-    case "phone":
       return (
         <Input
-          type={question.type === "email" ? "email" : question.type === "phone" ? "tel" : "text"}
+          type={question.type === "email" ? "email" : "text"}
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={question.placeholder}
           className={commonInputClasses}
+        />
+      );
+
+    case "phone":
+      return (
+        <PhoneInput
+          value={value || ""}
+          onChange={onChange}
+          placeholder={question.placeholder || "Enter phone number"}
+          className="w-full"
         />
       );
 
