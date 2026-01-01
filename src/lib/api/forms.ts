@@ -174,4 +174,9 @@ export const formService = {
     const response = await api.get(`/forms/${id}/analytics`);
     return response.data;
   },
+
+  async getFormBySlug(slug: string): Promise<{ success: boolean; data: Form }> {
+    const response = await api.get(`/forms/slug/${slug}`);
+    return response.data;
+  },
 };

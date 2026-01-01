@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +12,40 @@ interface FormSettingsProps {
 }
 
 export function FormSettings({ form, onUpdate }: FormSettingsProps) {
+  // Local state for form inputs to prevent saving on every keystroke
+  const [localSettings, setLocalSettings] = useState(form.settings || {});
+  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  // Sync with form when it changes from outside
+  useEffect(() => {
+    setLocalSettings(form.settings || {});
+  }, [form.settings]);
+
+  // Debounced update function
+  const handleLocalChange = (updates: any) => {
+    const newSettings = { ...localSettings, ...updates };
+    setLocalSettings(newSettings);
+
+    // Clear existing timeout
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+
+    // Set new timeout to save after 1 second of no typing
+    const timeout = setTimeout(() => {
+      onUpdate({ settings: newSettings });
+    }, 1000);
+
+    setDebounceTimeout(timeout);
+  };
+
+  // Immediate update for switches (no debounce needed)
+  const handleImmediateChange = (updates: any) => {
+    const newSettings = { ...localSettings, ...updates };
+    setLocalSettings(newSettings);
+    onUpdate({ settings: newSettings });
+  };
+
   return (
     <div className="space-y-6 max-w-3xl">
       <Card className="p-6 bg-white">
@@ -21,14 +56,9 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
           <div className="space-y-2">
             <Label className="text-gray-700">Thank You Message</Label>
             <Textarea
-              value={form.settings?.thankYouMessage || ""}
+              value={localSettings.thankYouMessage || ""}
               onChange={(e) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    thankYouMessage: e.target.value,
-                  },
-                })
+                handleLocalChange({ thankYouMessage: e.target.value })
               }
               placeholder="Thank you for your submission!"
               rows={3}
@@ -43,14 +73,9 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
           <div className="space-y-2">
             <Label className="text-gray-700">Submit Button Text</Label>
             <Input
-              value={form.settings?.submitButtonText || "Submit"}
+              value={localSettings.submitButtonText || "Submit"}
               onChange={(e) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    submitButtonText: e.target.value,
-                  },
-                })
+                handleLocalChange({ submitButtonText: e.target.value })
               }
               placeholder="Submit"
               className="bg-white text-gray-900"
@@ -61,14 +86,9 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
           <div className="space-y-2">
             <Label className="text-gray-700">Redirect URL (Optional)</Label>
             <Input
-              value={form.settings?.redirectUrl || ""}
+              value={localSettings.redirectUrl || ""}
               onChange={(e) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    redirectUrl: e.target.value,
-                  },
-                })
+                handleLocalChange({ redirectUrl: e.target.value })
               }
               placeholder="https://example.com/thank-you"
               className="bg-white text-gray-900"
@@ -93,14 +113,9 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
               </p>
             </div>
             <Switch
-              checked={form.settings?.allowMultipleSubmissions ?? true}
+              checked={localSettings.allowMultipleSubmissions ?? true}
               onCheckedChange={(checked) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    allowMultipleSubmissions: checked,
-                  },
-                })
+                handleImmediateChange({ allowMultipleSubmissions: checked })
               }
             />
           </div>
@@ -114,14 +129,9 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
               </p>
             </div>
             <Switch
-              checked={form.settings?.showProgressBar ?? true}
+              checked={localSettings.showProgressBar ?? true}
               onCheckedChange={(checked) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    showProgressBar: checked,
-                  },
-                })
+                handleImmediateChange({ showProgressBar: checked })
               }
             />
           </div>
@@ -131,13 +141,10 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
             <Label className="text-gray-700">Response Limit (Optional)</Label>
             <Input
               type="number"
-              value={form.settings?.responseLimit || ""}
+              value={localSettings.responseLimit || ""}
               onChange={(e) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    responseLimit: e.target.value ? Number(e.target.value) : undefined,
-                  },
+                handleLocalChange({
+                  responseLimit: e.target.value ? Number(e.target.value) : undefined,
                 })
               }
               placeholder="No limit"
@@ -164,33 +171,25 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
               </p>
             </div>
             <Switch
-              checked={form.settings?.enableNotifications ?? true}
+              checked={localSettings.enableNotifications ?? true}
               onCheckedChange={(checked) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    enableNotifications: checked,
-                  },
-                })
+                handleImmediateChange({ enableNotifications: checked })
               }
             />
           </div>
 
           {/* Notification Emails */}
-          {form.settings?.enableNotifications && (
+          {localSettings.enableNotifications && (
             <div className="space-y-2">
               <Label className="text-gray-700">Notification Email(s)</Label>
               <Input
-                value={form.settings?.notificationEmails?.join(", ") || ""}
+                value={localSettings.notificationEmails?.join(", ") || ""}
                 onChange={(e) =>
-                  onUpdate({
-                    settings: {
-                      ...form.settings,
-                      notificationEmails: e.target.value
-                        .split(",")
-                        .map((email) => email.trim())
-                        .filter(Boolean),
-                    },
+                  handleLocalChange({
+                    notificationEmails: e.target.value
+                      .split(",")
+                      .map((email) => email.trim())
+                      .filter(Boolean),
                   })
                 }
                 placeholder="email@example.com, another@example.com"
@@ -214,16 +213,13 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
             <Input
               type="datetime-local"
               value={
-                form.settings?.startDate
-                  ? new Date(form.settings.startDate).toISOString().slice(0, 16)
+                localSettings.startDate
+                  ? new Date(localSettings.startDate).toISOString().slice(0, 16)
                   : ""
               }
               onChange={(e) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    startDate: e.target.value ? new Date(e.target.value).toISOString() : undefined,
-                  },
+                handleLocalChange({
+                  startDate: e.target.value ? new Date(e.target.value).toISOString() : undefined,
                 })
               }
               className="bg-white text-gray-900"
@@ -239,16 +235,13 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
             <Input
               type="datetime-local"
               value={
-                form.settings?.endDate
-                  ? new Date(form.settings.endDate).toISOString().slice(0, 16)
+                localSettings.endDate
+                  ? new Date(localSettings.endDate).toISOString().slice(0, 16)
                   : ""
               }
               onChange={(e) =>
-                onUpdate({
-                  settings: {
-                    ...form.settings,
-                    endDate: e.target.value ? new Date(e.target.value).toISOString() : undefined,
-                  },
+                handleLocalChange({
+                  endDate: e.target.value ? new Date(e.target.value).toISOString() : undefined,
                 })
               }
               className="bg-white text-gray-900"

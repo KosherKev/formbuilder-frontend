@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useFormStore } from "@/lib/store/forms";
 import { useAuthStore } from "@/lib/store/auth";
@@ -18,7 +18,9 @@ import {
   Save, 
   Settings, 
   Loader2,
-  Globe
+  Globe,
+  BarChart3,
+  MessageSquare
 } from "lucide-react";
 import type { Question } from "@/lib/api/forms";
 
@@ -36,6 +38,7 @@ export default function FormBuilderPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [activeTab, setActiveTab] = useState("build");
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const formId = params.id as string;
 
@@ -50,6 +53,7 @@ export default function FormBuilderPage() {
       setTitle(currentForm.title);
       setDescription(currentForm.description || "");
       setQuestions(currentForm.questions || []);
+      setHasUnsavedChanges(false);
     }
   }, [currentForm]);
 
@@ -61,6 +65,7 @@ export default function FormBuilderPage() {
         description,
         questions,
       });
+      setHasUnsavedChanges(false);
       toast({
         title: "Success",
         description: "Form saved successfully",
@@ -103,6 +108,13 @@ export default function FormBuilderPage() {
     }
   };
 
+  // Debounced settings update - only updates local state, doesn't save to API
+  const handleSettingsUpdate = useCallback((updates: any) => {
+    setHasUnsavedChanges(true);
+    // This will be saved when user clicks Save button
+    // Settings component handles its own debouncing for preview
+  }, []);
+
   const addQuestion = (type: Question["type"]) => {
     const newQuestion: Question = {
       id: `q_${Date.now()}`,
@@ -122,12 +134,14 @@ export default function FormBuilderPage() {
 
     setQuestions([...questions, newQuestion]);
     setSelectedQuestionId(newQuestion.id);
+    setHasUnsavedChanges(true);
   };
 
   const updateQuestion = (questionId: string, updates: Partial<Question>) => {
     setQuestions(
       questions.map((q) => (q.id === questionId ? { ...q, ...updates } : q))
     );
+    setHasUnsavedChanges(true);
   };
 
   const deleteQuestion = (questionId: string) => {
@@ -135,6 +149,7 @@ export default function FormBuilderPage() {
     if (selectedQuestionId === questionId) {
       setSelectedQuestionId(null);
     }
+    setHasUnsavedChanges(true);
   };
 
   const duplicateQuestion = (questionId: string) => {
@@ -149,10 +164,12 @@ export default function FormBuilderPage() {
     };
 
     setQuestions([...questions, newQuestion]);
+    setHasUnsavedChanges(true);
   };
 
   const reorderQuestions = (newQuestions: Question[]) => {
     setQuestions(newQuestions.map((q, index) => ({ ...q, order: index })));
+    setHasUnsavedChanges(true);
   };
 
   if (isLoading) {
@@ -201,17 +218,38 @@ export default function FormBuilderPage() {
             <div>
               <Input
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setHasUnsavedChanges(true);
+                }}
                 className="text-lg font-semibold border-none shadow-none focus-visible:ring-0 px-2 bg-transparent text-gray-900"
                 placeholder="Untitled Form"
               />
               <p className="text-xs text-gray-500 px-2">
                 {user?.name} • {currentForm.status}
+                {hasUnsavedChanges && <span className="text-orange-500 ml-2">• Unsaved changes</span>}
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/dashboard/forms/${formId}/responses`)}
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Responses
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/dashboard/forms/${formId}/analytics`)}
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Analytics
+            </Button>
+            <div className="border-l h-8 mx-2" />
             <Button
               variant="outline"
               size="sm"
@@ -231,8 +269,8 @@ export default function FormBuilderPage() {
             <Button
               size="sm"
               onClick={handleSave}
-              disabled={isSaving}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+              disabled={isSaving || !hasUnsavedChanges}
+              className="bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -242,7 +280,7 @@ export default function FormBuilderPage() {
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Save
+                  {hasUnsavedChanges ? "Save" : "Saved"}
                 </>
               )}
             </Button>
@@ -278,16 +316,17 @@ export default function FormBuilderPage() {
                 onDuplicateQuestion={duplicateQuestion}
                 onReorderQuestions={reorderQuestions}
                 description={description}
-                onDescriptionChange={setDescription}
+                onDescriptionChange={(desc) => {
+                  setDescription(desc);
+                  setHasUnsavedChanges(true);
+                }}
               />
             </TabsContent>
 
             <TabsContent value="settings">
               <FormSettings
                 form={currentForm}
-                onUpdate={(updates) => {
-                  updateForm(formId, updates);
-                }}
+                onUpdate={handleSettingsUpdate}
               />
             </TabsContent>
           </Tabs>
