@@ -11,6 +11,8 @@ export interface Form {
   questions: Question[];
   settings: FormSettings;
   theme: FormTheme;
+  themeId?: string;
+  customTheme?: Partial<FormTheme>;
   analytics: FormAnalytics;
   createdAt: string;
   updatedAt: string;
@@ -116,6 +118,8 @@ export interface CreateFormData {
   questions?: Question[];
   settings?: Partial<FormSettings>;
   theme?: Partial<FormTheme>;
+  themeId?: string;
+  customTheme?: Partial<FormTheme>;
 }
 
 export const formService = {

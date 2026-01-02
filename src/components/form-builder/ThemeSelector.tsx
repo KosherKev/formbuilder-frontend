@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Palette } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, Palette, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { FormTheme } from "@/lib/themes";
-import { formThemes, applyThemeStyles, getCardStyleClasses } from "@/lib/themes";
+import { applyThemeStyles, getCardStyleClasses } from "@/lib/themes";
+import { themeService } from "@/lib/api/themes";
 import { cn } from "@/lib/utils";
 
 interface ThemeSelectorProps {
@@ -16,11 +17,32 @@ interface ThemeSelectorProps {
 }
 
 export function ThemeSelector({ selectedTheme, onSelectTheme }: ThemeSelectorProps) {
+  const [themes, setThemes] = useState<FormTheme[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [customizing, setCustomizing] = useState(false);
   const [customColors, setCustomColors] = useState({
     primary: selectedTheme?.colors?.primary || "#6366F1",
     background: selectedTheme?.colors?.background || "#0F172A",
   });
+
+  useEffect(() => {
+    const loadThemes = async () => {
+      try {
+        const response = await themeService.getThemes();
+        if (response.success) {
+          // Map API themes to FormTheme structure if needed
+          // The API Theme interface matches FormTheme closely enough
+          setThemes(response.data as unknown as FormTheme[]);
+        }
+      } catch (error) {
+        console.error("Failed to load themes:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadThemes();
+  }, []);
 
   const handlePresetSelect = (theme: FormTheme) => {
     setCustomizing(false);
@@ -39,23 +61,27 @@ export function ThemeSelector({ selectedTheme, onSelectTheme }: ThemeSelectorPro
     const newColors = { ...customColors, [key]: value };
     setCustomColors(newColors);
     
+    // Preserve existing theme properties if available
+    const existingTheme = selectedTheme || {};
+    const existingColors = existingTheme.colors || { muted: '#64748B' };
+    const existingFonts = existingTheme.fonts || { heading: 'Inter', body: 'Inter' };
+
     onSelectTheme({
+      ...existingTheme,
       id: 'custom',
       name: 'Custom Theme',
       colors: {
+        ...existingColors,
         primary: newColors.primary,
-        secondary: newColors.primary,
+        secondary: newColors.primary, // Using primary as secondary for now if custom
         background: newColors.background,
         foreground: newColors.background === '#0F172A' ? '#FFFFFF' : '#000000',
-        accent: newColors.primary,
-        muted: '#64748B',
+        accent: newColors.primary, // Using primary as accent
+        muted: existingColors.muted || '#64748B',
       },
-      fonts: {
-        heading: 'Inter',
-        body: 'Inter',
-      },
-      borderRadius: 'lg',
-      cardStyle: 'glass',
+      fonts: existingFonts,
+      borderRadius: existingTheme.borderRadius || 'lg',
+      cardStyle: existingTheme.cardStyle || 'glass',
     });
   };
 
@@ -127,9 +153,13 @@ export function ThemeSelector({ selectedTheme, onSelectTheme }: ThemeSelectorPro
             </div>
           </div>
         </Card>
+      ) : isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {formThemes.map((theme) => (
+          {themes.map((theme) => (
             <Card
               key={theme.id}
               className={cn(

@@ -335,7 +335,7 @@ export default function DashboardPage() {
                         <p className="text-sm text-muted-foreground line-clamp-1">{form.description}</p>
                       )}
                       <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                        <span>{form.questions.length} questions</span>
+                        <span>{form.questions?.length || 0} questions</span>
                         <span>•</span>
                         <span>{form.analytics?.totalSubmissions || 0} responses</span>
                         <span>•</span>

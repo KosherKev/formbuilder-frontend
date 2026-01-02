@@ -25,7 +25,7 @@ import {
   Copy,
   Check
 } from "lucide-react";
-import type { Question } from "@/lib/api/forms";
+import type { Question, Form } from "@/lib/api/forms";
 
 export default function FormBuilderPage() {
   const params = useParams();
@@ -37,6 +37,8 @@ export default function FormBuilderPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [settings, setSettings] = useState<Partial<Form["settings"]>>({});
+  const [theme, setTheme] = useState<Partial<Form["theme"]>>({});
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -58,6 +60,8 @@ export default function FormBuilderPage() {
       setTitle(currentForm.title);
       setDescription(currentForm.description || "");
       setQuestions(currentForm.questions || []);
+      setSettings(currentForm.settings || {});
+      setTheme(currentForm.theme || {});
       setHasUnsavedChanges(false);
     }
   }, [currentForm]);
@@ -65,11 +69,29 @@ export default function FormBuilderPage() {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      await updateForm(formId, {
+      
+      console.log("Saving form. Current theme state:", theme);
+
+      const payload: any = {
         title,
         description,
         questions,
-      });
+        settings: settings as any,
+      };
+
+      // Handle Theme
+      if (theme && theme.id && theme.id !== 'custom') {
+         console.log("Setting themeId to:", theme.id);
+         payload.themeId = theme.id;
+      } else if (theme) {
+         console.log("Setting custom theme");
+         payload.themeId = 'custom';
+         payload.customTheme = theme;
+      }
+      
+      console.log("Payload:", payload);
+
+      await updateForm(formId, payload);
       setHasUnsavedChanges(false);
       toast({
         title: "Success",
@@ -122,9 +144,15 @@ export default function FormBuilderPage() {
 
   // Debounced settings update - only updates local state, doesn't save to API
   const handleSettingsUpdate = useCallback((updates: any) => {
+    console.log("handleSettingsUpdate called with:", updates);
+    if (updates.settings) {
+      setSettings((prev) => ({ ...prev, ...updates.settings }));
+    }
+    if (updates.theme) {
+      console.log("Updating theme state to:", updates.theme);
+      setTheme((prev) => ({ ...prev, ...updates.theme }));
+    }
     setHasUnsavedChanges(true);
-    // This will be saved when user clicks Save button
-    // Settings component handles its own debouncing for preview
   }, []);
 
   const addQuestion = (type: Question["type"]) => {
@@ -379,7 +407,11 @@ export default function FormBuilderPage() {
 
             <TabsContent value="settings" className="mt-0">
               <FormSettings
-                form={currentForm}
+                form={{
+                  ...currentForm,
+                  settings: settings as any,
+                  theme: theme as any
+                }}
                 onUpdate={handleSettingsUpdate}
               />
             </TabsContent>

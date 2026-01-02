@@ -56,9 +56,19 @@ export function FormSettings({ form, onUpdate }: FormSettingsProps) {
       theme: {
         id: theme.id || 'custom',
         name: theme.name || 'Custom',
-        primaryColor: theme.colors?.primary || '#6366F1',
-        backgroundColor: theme.colors?.background || '#0F172A',
-        fontFamily: theme.fonts?.heading || 'Inter',
+        description: theme.description || 'Custom Theme',
+        colors: theme.colors || {
+          primary: '#6366F1',
+          secondary: '#EC4899',
+          background: '#0F172A',
+          foreground: '#FFFFFF',
+          accent: '#F59E0B',
+          muted: '#64748B',
+        },
+        fonts: theme.fonts || {
+          heading: 'Inter',
+          body: 'Inter',
+        },
         backgroundGradient: theme.backgroundGradient,
         borderRadius: theme.borderRadius,
         cardStyle: theme.cardStyle,
