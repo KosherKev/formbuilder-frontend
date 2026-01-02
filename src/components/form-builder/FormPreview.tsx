@@ -47,7 +47,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
 
         {/* Form Preview */}
         <div 
-          className="p-8 min-h-[500px] flex items-center justify-center"
+          className="p-8 min-h-125 flex items-center justify-center"
           style={themeStyles}
         >
           <Card 
