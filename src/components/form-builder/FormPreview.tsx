@@ -10,6 +10,23 @@ interface FormPreviewProps {
   onClose: () => void;
 }
 
+// Helper function to get text style classes
+const getTextStyleClasses = (textStyle?: {
+  fontSize?: 'sm' | 'base' | 'lg' | 'xl';
+  fontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+  textAlign?: 'left' | 'center' | 'right';
+  lineHeight?: 'tight' | 'normal' | 'relaxed' | 'loose';
+}) => {
+  if (!textStyle) return '';
+  
+  const fontSize = textStyle.fontSize || 'base';
+  const fontWeight = textStyle.fontWeight || 'normal';
+  const textAlign = textStyle.textAlign || 'left';
+  const lineHeight = textStyle.lineHeight || 'normal';
+  
+  return `text-${fontSize} font-${fontWeight} text-${textAlign} leading-${lineHeight}`;
+};
+
 export function FormPreview({ form, onClose }: FormPreviewProps) {
   // Generate theme styles if a theme is selected
   const themeStyles = form.theme ? applyThemeStyles(form.theme) : {};
@@ -70,8 +87,12 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
             <div className="space-y-6">
               {form.questions.map((question, index) => (
                 <div key={question.id} className="space-y-2">
+                  {/* Apply text styles to question label */}
                   <label 
-                    className="block text-sm font-medium"
+                    className={cn(
+                      "block text-sm font-medium",
+                      getTextStyleClasses(question.textStyle)
+                    )}
                     style={{ 
                       fontFamily: 'var(--theme-font-body)',
                       color: 'var(--theme-foreground)'
@@ -82,9 +103,14 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                       <span className="text-red-400 ml-1">*</span>
                     )}
                   </label>
+                  
+                  {/* Apply text styles to question description */}
                   {question.description && (
                     <p 
-                      className="text-sm text-muted-foreground"
+                      className={cn(
+                        "text-sm text-muted-foreground",
+                        getTextStyleClasses(question.textStyle)
+                      )}
                       style={{ 
                         fontFamily: 'var(--theme-font-body)',
                         color: 'var(--theme-muted)'
@@ -105,6 +131,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                       style={{
                         borderColor: 'var(--theme-muted)',
                         outlineColor: 'var(--theme-primary)',
+                        fontFamily: 'var(--theme-font-body)',
                       }}
                       disabled
                     />
@@ -134,6 +161,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                       style={{
                         borderColor: 'var(--theme-muted)',
                         outlineColor: 'var(--theme-primary)',
+                        fontFamily: 'var(--theme-font-body)',
                       }}
                       disabled
                     />
@@ -146,6 +174,7 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                       style={{
                         borderColor: 'var(--theme-muted)',
                         outlineColor: 'var(--theme-primary)',
+                        fontFamily: 'var(--theme-font-body)',
                       }}
                       disabled
                     />
@@ -213,7 +242,8 @@ export function FormPreview({ form, onClose }: FormPreviewProps) {
                         borderColor: 'var(--theme-muted)',
                         outlineColor: 'var(--theme-primary)',
                         color: 'var(--theme-foreground)',
-                        backgroundColor: 'transparent'
+                        backgroundColor: 'transparent',
+                        fontFamily: 'var(--theme-font-body)',
                       }}
                       disabled
                     >

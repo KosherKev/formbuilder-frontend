@@ -11,8 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { Loader2, CheckCircle2, FileText } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import { validatePhoneNumber, cn } from "@/lib/utils";
 
 // Helper function to get text style classes
@@ -41,26 +40,22 @@ function evaluateLogic(question: Question, answers: { [key: string]: any }): boo
   const { conditions, logicOperator = 'AND' } = question.conditionalLogic;
 
   const results = conditions.map((condition) => {
-    const value = answers[question.id]; // BUG FIX: Logic should check dependencies, but here it checks its own ID? 
-    // Wait, the logic evaluation should check the DEPENDENCY question's answer, not the current question's answer.
-    // The original code had: const value = answers[condition.questionId];
-    // I should preserve that.
-    const val = answers[condition.questionId];
+    const value = answers[condition.questionId];
     const targetValue = condition.value;
 
     switch (condition.operator) {
       case 'equals':
-        return val === targetValue;
+        return value === targetValue;
       case 'not_equals':
-        return val !== targetValue;
+        return value !== targetValue;
       case 'contains':
-        return String(val || '').toLowerCase().includes(String(targetValue).toLowerCase());
+        return String(value || '').toLowerCase().includes(String(targetValue).toLowerCase());
       case 'not_contains':
-        return !String(val || '').toLowerCase().includes(String(targetValue).toLowerCase());
+        return !String(value || '').toLowerCase().includes(String(targetValue).toLowerCase());
       case 'greater_than':
-        return Number(val) > Number(targetValue);
+        return Number(value) > Number(targetValue);
       case 'less_than':
-        return Number(val) < Number(targetValue);
+        return Number(value) < Number(targetValue);
       default:
         return true;
     }
@@ -237,7 +232,7 @@ export default function PublicFormPage() {
   if (submitted) {
     return (
       <div 
-        className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden px-4"
+        className="flex min-h-screen items-center justify-center relative overflow-hidden px-4"
         style={themeStyles}
       >
         <Card 
@@ -253,19 +248,30 @@ export default function PublicFormPage() {
             <CheckCircle2 className="h-6 w-6 text-green-500" />
           </div>
           <h2 
-            className="text-xl font-semibold text-foreground mb-2"
-            style={{ fontFamily: 'var(--theme-font-heading)' }}
+            className="text-xl font-semibold mb-2"
+            style={{ 
+              fontFamily: 'var(--theme-font-heading)',
+              color: 'var(--theme-foreground)'
+            }}
           >
             Thank You!
           </h2>
           <p 
             className="text-muted-foreground"
-            style={{ fontFamily: 'var(--theme-font-body)' }}
+            style={{ 
+              fontFamily: 'var(--theme-font-body)',
+              color: 'var(--theme-muted)'
+            }}
           >
             {form.settings?.thankYouMessage || "Your response has been recorded."}
           </p>
           {form.settings?.redirectUrl && (
-            <p className="text-sm text-muted-foreground mt-4">Redirecting...</p>
+            <p 
+              className="text-sm mt-4"
+              style={{ color: 'var(--theme-muted)' }}
+            >
+              Redirecting...
+            </p>
           )}
         </Card>
       </div>
@@ -280,7 +286,7 @@ export default function PublicFormPage() {
       <div className="max-w-xl mx-auto">
         <Card 
           className={cn(
-            "p-8 border-white/10",
+            "p-8",
             getCardStyleClasses(form.theme?.cardStyle)
           )}
           style={{
@@ -290,7 +296,7 @@ export default function PublicFormPage() {
           {/* Form Header */}
           <div className="mb-8">
             <h1 
-              className="text-3xl font-bold text-foreground mb-2"
+              className="text-3xl font-bold mb-2"
               style={{ 
                 fontFamily: 'var(--theme-font-heading)',
                 color: 'var(--theme-foreground)'
@@ -300,7 +306,6 @@ export default function PublicFormPage() {
             </h1>
             {form.description && (
               <p 
-                className="text-muted-foreground"
                 style={{ 
                   fontFamily: 'var(--theme-font-body)',
                   color: 'var(--theme-muted)'
@@ -314,8 +319,12 @@ export default function PublicFormPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {visibleQuestions.map((question, index) => (
               <div key={question.id} className="space-y-2">
+                {/* Apply text styles to label */}
                 <Label 
-                  className="block text-sm font-medium text-foreground"
+                  className={cn(
+                    "block text-sm font-medium",
+                    getTextStyleClasses(question.textStyle)
+                  )}
                   style={{ 
                     fontFamily: 'var(--theme-font-body)',
                     color: 'var(--theme-foreground)'
@@ -326,9 +335,14 @@ export default function PublicFormPage() {
                     <span className="text-red-400 ml-1">*</span>
                   )}
                 </Label>
+                
+                {/* Apply text styles to description */}
                 {question.description && (
                   <p 
-                    className="text-sm text-muted-foreground"
+                    className={cn(
+                      "text-sm",
+                      getTextStyleClasses(question.textStyle)
+                    )}
                     style={{ 
                       fontFamily: 'var(--theme-font-body)',
                       color: 'var(--theme-muted)'
@@ -386,22 +400,18 @@ export default function PublicFormPage() {
                 )}
 
                 {question.type === "phone" && (
-                  <div className="relative">
-                     {/* Using standard Input for phone for now to simplify style injection, 
-                         or wrap PhoneInput if it supports style/className properly */}
-                     <Input
-                        type="tel"
-                        placeholder={question.placeholder}
-                        value={answers[question.id] || ""}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                        className={validationErrors[question.id] ? "border-red-500" : ""}
-                        style={{
-                          borderColor: validationErrors[question.id] ? undefined : 'var(--theme-muted)',
-                          outlineColor: 'var(--theme-primary)',
-                          fontFamily: 'var(--theme-font-body)',
-                        }}
-                     />
-                  </div>
+                  <Input
+                    type="tel"
+                    placeholder={question.placeholder}
+                    value={answers[question.id] || ""}
+                    onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                    className={validationErrors[question.id] ? "border-red-500" : ""}
+                    style={{
+                      borderColor: validationErrors[question.id] ? undefined : 'var(--theme-muted)',
+                      outlineColor: 'var(--theme-primary)',
+                      fontFamily: 'var(--theme-font-body)',
+                    }}
+                  />
                 )}
 
                 {question.type === "date" && (
