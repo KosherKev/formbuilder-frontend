@@ -51,7 +51,7 @@ export default function DashboardPage() {
       setForms(response.data);
       
       // Calculate stats
-      const totalForms = response.pagination.total;
+      const totalForms = response.pagination?.total || response.data.length;
       const publishedForms = response.data.filter(f => f.status === "published").length;
       const totalResponses = response.data.reduce((sum, f) => sum + (f.analytics?.totalSubmissions || 0), 0);
       const totalViews = response.data.reduce((sum, f) => sum + (f.analytics?.totalViews || 0), 0);

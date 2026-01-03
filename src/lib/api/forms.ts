@@ -14,8 +14,13 @@ export interface Form {
   themeId?: string;
   customTheme?: Partial<FormTheme>;
   analytics: FormAnalytics;
+  offlineConfig?: FormOfflineConfig;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface FormOfflineConfig {
+  enabled: boolean;
 }
 
 export interface Question {
