@@ -173,7 +173,12 @@ export function PricingPlans() {
               <p className="text-gray-600 mb-6">{plan.description}</p>
 
               {/* CTA Button */}
-              <PlanButton plan={plan} isCurrentPlan={isCurrentPlan} />
+              <PlanButton
+                plan={plan}
+                isCurrentPlan={isCurrentPlan}
+                currency={currency}
+                interval={interval}
+              />
 
               {/* Features */}
               <div className="mt-6 space-y-3">
@@ -271,9 +276,13 @@ function Feature({
 function PlanButton({
   plan,
   isCurrentPlan,
+  currency,
+  interval,
 }: {
   plan: any;
   isCurrentPlan: boolean;
+  currency: string;
+  interval: string;
 }) {
   const handleClick = () => {
     if (plan.name === "Free") {
@@ -281,7 +290,7 @@ function PlanButton({
     } else if (plan.name === "Enterprise") {
       window.location.href = "/contact-sales";
     } else {
-      window.location.href = `/pricing/checkout?plan=${plan._id}`;
+      window.location.href = `/pricing/checkout?plan=${plan._id}&currency=${currency}&interval=${interval}`;
     }
   };
 

@@ -5,7 +5,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { usePayment } from "@/hooks/usePayment";
+import { useToast } from "@/components/ui/toaster";
 import { UsageLimitBanner } from "./UsageLimitBanner";
 import {
   CreditCard,
@@ -33,6 +35,9 @@ export function SubscriptionDashboard() {
     downloadReceipt,
     cancelSubscription: cancelSub,
   } = usePayment();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { toast } = useToast();
 
   const [usage, setUsage] = useState({
     formsCreated: 0,
@@ -45,6 +50,16 @@ export function SubscriptionDashboard() {
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   useEffect(() => {
+    // Check for success status from payment redirect
+    if (searchParams.get("status") === "success") {
+      toast({
+        title: "Subscription Updated",
+        description: "Your subscription has been successfully updated.",
+      });
+      // Remove the query parameter
+      router.replace("/dashboard/billing");
+    }
+
     // Load payment history
     loadHistory();
 

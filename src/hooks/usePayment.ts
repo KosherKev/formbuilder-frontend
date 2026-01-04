@@ -92,11 +92,12 @@ export function usePayment() {
           interval,
           currency,
           paymentMethod,
+          callbackUrl: `${window.location.origin}/dashboard/billing?status=success`,
         });
 
         // Redirect to payment URL
-        if (result.paymentUrl) {
-          window.location.href = result.paymentUrl;
+        if (result.authorizationUrl) {
+          window.location.href = result.authorizationUrl;
         }
 
         return result;

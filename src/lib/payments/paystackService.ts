@@ -175,7 +175,8 @@ class PaystackService {
       network?: string;
       phoneNumber?: string;
     };
-  }): Promise<{ subscription: Subscription; paymentUrl: string; reference: string }> {
+    callbackUrl?: string;
+  }): Promise<{ success: boolean; authorizationUrl: string; reference: string }> {
     try {
       const response = await api.post("/subscriptions/subscribe", data);
       return response.data;

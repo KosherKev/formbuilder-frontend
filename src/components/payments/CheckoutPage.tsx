@@ -31,6 +31,20 @@ export function CheckoutPage() {
     }
   }, [planId, allPlans]);
 
+  // Handle URL parameters for currency and interval
+  useEffect(() => {
+    const currencyParam = searchParams.get("currency");
+    const intervalParam = searchParams.get("interval");
+
+    if (currencyParam && ["USD", "GHS", "NGN", "KES"].includes(currencyParam)) {
+      setCurrency(currencyParam as any);
+    }
+
+    if (intervalParam && ["monthly", "annual"].includes(intervalParam)) {
+      setInterval(intervalParam as any);
+    }
+  }, [searchParams]);
+
   const handleSubscribe = async () => {
     if (!selectedPlan || !paymentMethod) return;
 
@@ -55,11 +69,12 @@ export function CheckoutPage() {
         interval,
         currency,
         paymentMethod,
+        callbackUrl: `${window.location.origin}/dashboard/billing?status=success`,
       });
 
       // Redirect to Paystack payment page
-      if (result.paymentUrl) {
-        window.location.href = result.paymentUrl;
+      if (result.authorizationUrl) {
+        window.location.href = result.authorizationUrl;
       }
     } catch (err: any) {
       setError(err.message || "Failed to process payment");
